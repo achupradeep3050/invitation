@@ -42,7 +42,7 @@ same `/exec` URL. A *New deployment* makes a new URL.
 - **Names, photo style, intro:** `js/config.js`.
 - **Wording:** `js/i18n.js` (keep the `en` and `ml` keys in step).
 - **Times, venues, map links:** `EVENTS` at the top of `js/app.js`.
-- **Photos:** `assets/hero.jpg` is the portrait, which is also the WhatsApp/link preview and the photo sent by the sender app. `m1–m4.jpg` fill the 8-tile carousel, each shown twice on opposite sides. Keep the names and use portrait shape, about 2:3 or 3:4. They're shown as they are (`PHOTO_STYLE: 'Original'`).
+- **Photos:** `assets/portrait-garden.jpg` is the portrait, which is also the WhatsApp/link preview and the sender app's photo. `assets/moment-*.jpg` fill the 8-tile carousel, each shown twice on opposite sides. They're shown as they are (`PHOTO_STYLE: 'Original'`). ⚠️ **To change a photo, give it a NEW file name and update `index.html`.** Also bump `?v=` on the CSS/JS links whenever you change them. Browsers and GitHub's CDN keep the old copies under an old name, so reusing a name looks like nothing changed.
 
 ## Run locally
 ```

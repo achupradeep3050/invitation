@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Manrope:wght@400;500;600&family=Noto+Serif+Malayalam:wght@400;500;600&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261001c">
+<link rel="stylesheet" href="css/style.css?v=20261001v3b">
 </head>
 <body>
 
@@ -40,10 +40,7 @@
     <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" result="disp"></feDisplacementMap>
     <feMorphology in="disp" operator="dilate" radius="1.4" result="blob"></feMorphology>
     <feGaussianBlur in="blob" stdDeviation="0.5" result="soft"></feGaussianBlur>
-    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="2" result="grain"></feTurbulence>
-    <feDiffuseLighting in="grain" surfaceScale="1.1" lighting-color="#ffffff" result="canvasTex"><feDistantLight azimuth="45" elevation="62"></feDistantLight></feDiffuseLighting>
-    <feBlend in="soft" in2="canvasTex" mode="multiply" result="b"></feBlend>
-    <feComposite in="b" in2="SourceGraphic" operator="in"></feComposite>
+    <feComposite in="soft" in2="SourceGraphic" operator="in"></feComposite>
   </filter>
 </svg>
 
@@ -53,6 +50,8 @@
   <span class="lang-en">EN</span>
   <span class="lang-ml">മല</span>
 </button>
+
+<nav class="dots" id="dots" aria-label="Chapters"></nav>
 
 <!-- Intro: the doors -->
 <div class="intro" id="intro" data-stage="0">
@@ -76,137 +75,147 @@
   <button class="skip" type="button" data-open data-i18n="skip"></button>
 </div>
 
-<main>
+<!-- The chapters: one full-screen card each, locking in one per swipe. The scroller snaps to the rail of markers
+     (sticky cards can't be snap targets themselves), and each card settles back as the next one covers it. -->
+<main class="scroller" id="scroller">
+  <div class="rail" id="rail" aria-hidden="true"></div>
 
-  <section class="hero snap" data-screen-label="01 Hero" data-nav="hero">
-    <div class="eyebrow-gold hero-eyebrow" data-i18n="together"></div>
-    <div class="lamp"><canvas id="lamp"></canvas></div>
-    <div class="hero-names">
-      <h1 class="visually-hidden"><span data-name="groom"></span> &amp; <span data-name="bride"></span></h1>
-      <div class="hero-name" data-name="groom" aria-hidden="true"></div>
-      <div class="hero-amp" aria-hidden="true">&amp;</div>
-      <div class="hero-name" data-name="bride" aria-hidden="true"></div>
-      <p class="hero-invite" data-i18n="invite"></p>
-    </div>
-    <div class="dates">
-      <div><div class="d">03</div><div class="p" data-i18n="guruvayurShort"></div></div>
-      <div class="sep"></div>
-      <div><div class="d">05</div><div class="p" data-i18n="chavaraShort"></div></div>
-      <div class="sep"></div>
-      <div><div class="d">06</div><div class="p" data-i18n="varkalaShort"></div></div>
-    </div>
-    <div class="dec-year" data-i18n="decYear"></div>
-    <div class="hero-tail"><div></div></div>
-  </section>
-
-
-  <section class="countdown snap" data-screen-label="02 Countdown" data-nav="countdown">
-    <div class="countdown-inner" data-reveal>
-      <svg class="ornament" viewBox="0 0 240 24" aria-hidden="true"><path d="M0 12h92M148 12h92" stroke="currentColor" stroke-width="1"/><path d="M120 2l10 10-10 10-10-10z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="120" cy="12" r="2.4" fill="currentColor"/><circle cx="100" cy="12" r="1.6" fill="currentColor"/><circle cx="140" cy="12" r="1.6" fill="currentColor"/></svg>
-      <h2 class="eyebrow" data-i18n="countdown"></h2>
-      <div class="cd-grid" id="countdown"></div>
-      <div class="until" data-i18n="until"></div>
-      <svg class="ornament flip" viewBox="0 0 240 24" aria-hidden="true"><path d="M0 12h92M148 12h92" stroke="currentColor" stroke-width="1"/><path d="M120 2l10 10-10 10-10-10z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="120" cy="12" r="2.4" fill="currentColor"/><circle cx="100" cy="12" r="1.6" fill="currentColor"/><circle cx="140" cy="12" r="1.6" fill="currentColor"/></svg>
+  <section class="chapter" data-nav="0" data-screen-label="01 Hero">
+    <div class="card hero" data-card>
+      <div class="eyebrow-gold" data-i18n="together"></div>
+      <div class="lamp"><canvas id="lamp"></canvas></div>
+      <div class="hero-names">
+        <h1 class="visually-hidden"><span data-name="groom"></span> &amp; <span data-name="bride"></span></h1>
+        <div class="hero-name" data-name="groom" aria-hidden="true"></div>
+        <div class="hero-amp" aria-hidden="true">&amp;</div>
+        <div class="hero-name" data-name="bride" aria-hidden="true"></div>
+        <p class="hero-invite" data-i18n="invite"></p>
+      </div>
+      <div class="dates">
+        <div><div class="d">03</div><div class="p" data-i18n="guruvayurShort"></div></div>
+        <div class="sep"></div>
+        <div><div class="d">05</div><div class="p" data-i18n="chavaraShort"></div></div>
+        <div class="sep"></div>
+        <div><div class="d">06</div><div class="p" data-i18n="varkalaShort"></div></div>
+      </div>
+      <div class="swipe-hint"><div data-i18n="swipe"></div><i></i></div>
     </div>
   </section>
 
-  <section class="portrait-sec snap" data-screen-label="03 Portrait" data-nav="us">
-    <div class="heading" data-reveal>
-      <div class="rule"></div>
-      <h2 class="h2" data-i18n="us"></h2>
-    </div>
-    <div class="portrait-wrap" data-reveal>
-      <div class="portrait" id="portrait">
-        <div class="photo portrait-photo"><img src="assets/portrait-garden.jpg" alt="Achu and Lekshmi" width="900" height="1200"></div>
-        <div class="plate-wrap"><div class="plate"><span data-name="groom"></span> · <span data-name="bride"></span></div></div>
+  <section class="chapter" data-nav="1" data-screen-label="02 Countdown">
+    <div class="card countdown" data-card>
+      <div class="band16"></div>
+      <div class="countdown-inner" data-reveal>
+        <h2 class="eyebrow" data-i18n="countdown"></h2>
+        <div class="cd-grid" id="countdown"></div>
+        <div class="until" data-i18n="until"></div>
       </div>
     </div>
   </section>
 
-  <div id="events"></div>
-
-
-  <section class="moments snap" data-screen-label="06 Moments" data-nav="moments">
-    <div class="heading" data-reveal>
-      <div class="rule"></div>
-      <h2 class="h2" data-i18n="moments"></h2>
-    </div>
-    <div class="stage" id="carStage">
-      <div class="carousel" id="carousel">
-        <div class="tile" style="transform:rotateY(0deg) translateZ(230px)"><div class="photo"><img src="assets/moment-save-the-date.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(45deg) translateZ(230px)"><div class="photo"><img src="assets/moment-garden.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(90deg) translateZ(230px)"><div class="photo"><img src="assets/moment-harley.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(135deg) translateZ(230px)"><div class="photo"><img src="assets/moment-our-story.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy" class="poster"></div></div>
-        <div class="tile" style="transform:rotateY(180deg) translateZ(230px)"><div class="photo"><img src="assets/moment-save-the-date.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(225deg) translateZ(230px)"><div class="photo"><img src="assets/moment-garden.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(270deg) translateZ(230px)"><div class="photo"><img src="assets/moment-harley.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
-        <div class="tile" style="transform:rotateY(315deg) translateZ(230px)"><div class="photo"><img src="assets/moment-our-story.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy" class="poster"></div></div>
+  <section class="chapter" data-nav="2" data-screen-label="03 Posters">
+    <div class="card story" data-card>
+      <div class="heading" data-reveal>
+        <div class="rule"></div>
+        <h2 class="h2" data-i18n="us"></h2>
+      </div>
+      <div class="stack-wrap">
+        <div class="stack" id="stack" role="button" tabindex="0" aria-roledescription="photo stack" aria-label="Our story — tap for the next poster"></div>
+      </div>
+      <div class="stack-foot">
+        <div class="stack-dots" id="stackDots"></div>
+        <div class="hint" data-i18n="tap"></div>
       </div>
     </div>
-    <div class="drag" data-i18n="drag"></div>
   </section>
 
-  <section class="rsvp snap" id="rsvp" data-screen-label="07 RSVP" data-nav="rsvp">
-    <div class="heading" data-reveal>
-      <div class="rule"></div>
-      <h2 class="h2" data-i18n="rsvp"></h2>
+  <div id="events" class="events"></div>
+
+  <section class="chapter" data-nav="5" data-screen-label="06 Reception">
+    <div class="card reception scrolly" data-card id="recCard"></div>
+  </section>
+
+  <section class="chapter" data-nav="6" data-screen-label="07 Moments">
+    <div class="card moments" data-card>
+      <div class="heading" data-reveal>
+        <div class="rule"></div>
+        <h2 class="h2" data-i18n="moments"></h2>
+      </div>
+      <div class="stage" id="carStage">
+        <div class="carousel" id="carousel">
+          <div class="tile" style="transform:rotateY(0deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m1.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+          <div class="tile" style="transform:rotateY(60deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m2.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+          <div class="tile" style="transform:rotateY(120deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m3.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+          <div class="tile" style="transform:rotateY(180deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m4.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+          <div class="tile" style="transform:rotateY(240deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m5.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+          <div class="tile" style="transform:rotateY(300deg) translateZ(230px)"><div class="photo"><img src="assets/moments/m6.jpg" alt="Achu and Lekshmi" draggable="false" loading="lazy"></div></div>
+        </div>
+      </div>
+      <div class="drag" data-i18n="drag"></div>
     </div>
-    <div class="rsvp-card" data-reveal>
-      <form class="form" id="rsvpForm" novalidate>
-        <div class="field">
-          <label class="flabel" for="fName" data-i18n="name"></label>
-          <input class="input" id="fName" name="name" autocomplete="name" maxlength="80" aria-describedby="errName">
-          <div class="err" id="errName" role="alert" hidden></div>
-        </div>
-        <div class="field">
-          <label class="flabel" for="fPhone" data-i18n="phone"></label>
-          <input class="input" id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+91" maxlength="20" aria-describedby="errPhone">
-          <div class="err" id="errPhone" role="alert" hidden></div>
-        </div>
-        <div class="field field-attend">
-          <div class="flabel" id="attendLabel" data-i18n="attending"></div>
-          <div class="opts" id="attendOpts" role="group" aria-labelledby="attendLabel"></div>
-        </div>
-        <div class="guests-row" id="guestsRow">
-          <div class="flabel" id="guestsLabel" data-i18n="guests"></div>
-          <div class="stepper">
-            <button class="step" type="button" id="guestsDec" aria-label="Fewer guests">−</button>
-            <div class="gcount" id="guestsCount" aria-live="polite" aria-labelledby="guestsLabel">4</div>
-            <button class="step" type="button" id="guestsInc" aria-label="More guests">+</button>
+  </section>
+
+  <section class="chapter" data-nav="7" data-screen-label="08 RSVP" id="rsvp">
+    <div class="card rsvp scrolly" data-card>
+      <div class="heading rsvp-head">
+        <div class="rule"></div>
+        <h2 class="h2" data-i18n="rsvp"></h2>
+      </div>
+      <div class="rsvp-card">
+        <form class="form" id="rsvpForm" novalidate>
+          <div class="field">
+            <label class="flabel" for="fName" data-i18n="name"></label>
+            <input class="input" id="fName" name="name" autocomplete="name" maxlength="80" aria-describedby="errName">
+            <div class="err" id="errName" role="alert" hidden></div>
           </div>
+          <div class="field">
+            <label class="flabel" for="fPhone" data-i18n="phone"></label>
+            <input class="input" id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+91" maxlength="20" aria-describedby="errPhone">
+            <div class="err" id="errPhone" role="alert" hidden></div>
+          </div>
+          <div class="field field-attend">
+            <div class="flabel" id="attendLabel" data-i18n="attending"></div>
+            <div class="opts" id="attendOpts" role="group" aria-labelledby="attendLabel"></div>
+          </div>
+          <div class="guests-row" id="guestsRow">
+            <div class="flabel" id="guestsLabel" data-i18n="guests"></div>
+            <div class="stepper">
+              <button class="step" type="button" id="guestsDec" aria-label="Fewer guests">−</button>
+              <div class="gcount" id="guestsCount" aria-live="polite" aria-labelledby="guestsLabel">4</div>
+              <button class="step" type="button" id="guestsInc" aria-label="More guests">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="flabel" for="fNote" data-i18n="note"></label>
+            <textarea class="input textarea" id="fNote" name="note" rows="2" maxlength="500"></textarea>
+          </div>
+          <div class="hp" aria-hidden="true">
+            <label for="fWebsite">Leave this empty</label>
+            <input id="fWebsite" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <button class="btn-send" type="submit" id="sendBtn"></button>
+          <div class="err err-send" id="sendErr" role="alert" hidden></div>
+        </form>
+        <div class="thanks" id="thanks" hidden>
+          <div class="thanks-h" id="thanksHead"></div>
+          <div class="thanks-s" id="thanksSummary"></div>
+          <button class="btn-edit" type="button" id="editBtn" data-i18n="edit"></button>
         </div>
-        <div class="field">
-          <label class="flabel" for="fNote" data-i18n="note"></label>
-          <textarea class="input textarea" id="fNote" name="note" rows="2" maxlength="500"></textarea>
-        </div>
-        <div class="hp" aria-hidden="true">
-          <label for="fWebsite">Leave this empty</label>
-          <input id="fWebsite" name="website" tabindex="-1" autocomplete="off">
-        </div>
-        <button class="btn-send" type="submit" id="sendBtn"></button>
-        <div class="err err-send" id="sendErr" role="alert" hidden></div>
-      </form>
-      <div class="thanks" id="thanks" hidden>
-        <div class="thanks-h" id="thanksHead"></div>
-        <div class="thanks-s" id="thanksSummary"></div>
-        <button class="btn-edit" type="button" id="editBtn" data-i18n="edit"></button>
       </div>
     </div>
   </section>
 
-  <section class="credits snap" data-screen-label="08 Credits" data-nav="credits">
-    <div id="credits" class="credits-list"></div>
-    <div class="credits-line"></div>
-    <div class="credits-names"><span data-name="groom"></span> &amp; <span data-name="bride"></span></div>
+  <section class="chapter" data-nav="8" data-screen-label="09 Credits">
+    <div class="card credits" data-card>
+      <div id="credits" class="credits-list"></div>
+      <div class="credits-line"></div>
+      <div class="credits-names"><span data-name="groom"></span> &amp; <span data-name="bride"></span></div>
+    </div>
   </section>
 </main>
 
-<!-- chapter navigation: dots (wide screens) + a floating label that names the chapter you just arrived at -->
-<nav class="chapters" id="chapters" aria-label="Chapters"></nav>
-<div class="island" id="island" aria-live="polite"><span class="island-n" id="islandN"></span><span class="island-t" id="islandT"></span></div>
-
-<script src="js/config.js?v=20261001c"></script>
-<script src="js/i18n.js?v=20261001c"></script>
-<script src="js/app.js?v=20261001c"></script>
+<script src="js/config.js?v=20261001v3"></script>
+<script src="js/i18n.js?v=20261001v3"></script>
+<script src="js/app.js?v=20261001v3"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 window.WEDDING_CONFIG = {
   // Google Apps Script web-app URL (ends in /exec). See README.md → "Connect RSVP".
   // While empty, the RSVP button is disabled and says so — nothing is saved anywhere.
-  RSVP_URL: '',
+  RSVP_URL: 'https://script.google.com/macros/s/AKfycbxB9unRxR-etP-B5ozQHbhp_je8Xd65xd9xXFBZAPzlWYGWEwNIsdr6C2yjt8s6mrhT/exec',
 
   NAMES: {
     en: { groom: 'Achu', bride: 'Lekshmi' },

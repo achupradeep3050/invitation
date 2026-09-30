@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Manrope:wght@400;500;600&family=Noto+Serif+Malayalam:wght@400;500;600&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261001b">
+<link rel="stylesheet" href="css/style.css?v=20261001c">
 </head>
 <body>
 
@@ -78,7 +78,7 @@
 
 <main>
 
-  <section class="hero" data-screen-label="01 Hero">
+  <section class="hero snap" data-screen-label="01 Hero" data-nav="hero">
     <div class="eyebrow-gold hero-eyebrow" data-i18n="together"></div>
     <div class="lamp"><canvas id="lamp"></canvas></div>
     <div class="hero-names">
@@ -99,17 +99,18 @@
     <div class="hero-tail"><div></div></div>
   </section>
 
-  <div class="band"></div>
 
-  <section class="countdown" data-screen-label="02 Countdown">
+  <section class="countdown snap" data-screen-label="02 Countdown" data-nav="countdown">
     <div class="countdown-inner" data-reveal>
+      <svg class="ornament" viewBox="0 0 240 24" aria-hidden="true"><path d="M0 12h92M148 12h92" stroke="currentColor" stroke-width="1"/><path d="M120 2l10 10-10 10-10-10z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="120" cy="12" r="2.4" fill="currentColor"/><circle cx="100" cy="12" r="1.6" fill="currentColor"/><circle cx="140" cy="12" r="1.6" fill="currentColor"/></svg>
       <h2 class="eyebrow" data-i18n="countdown"></h2>
       <div class="cd-grid" id="countdown"></div>
       <div class="until" data-i18n="until"></div>
+      <svg class="ornament flip" viewBox="0 0 240 24" aria-hidden="true"><path d="M0 12h92M148 12h92" stroke="currentColor" stroke-width="1"/><path d="M120 2l10 10-10 10-10-10z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="120" cy="12" r="2.4" fill="currentColor"/><circle cx="100" cy="12" r="1.6" fill="currentColor"/><circle cx="140" cy="12" r="1.6" fill="currentColor"/></svg>
     </div>
   </section>
 
-  <section class="portrait-sec" data-screen-label="03 Portrait">
+  <section class="portrait-sec snap" data-screen-label="03 Portrait" data-nav="us">
     <div class="heading" data-reveal>
       <div class="rule"></div>
       <h2 class="h2" data-i18n="us"></h2>
@@ -124,9 +125,8 @@
 
   <div id="events"></div>
 
-  <div class="band"></div>
 
-  <section class="moments" data-screen-label="06 Moments">
+  <section class="moments snap" data-screen-label="06 Moments" data-nav="moments">
     <div class="heading" data-reveal>
       <div class="rule"></div>
       <h2 class="h2" data-i18n="moments"></h2>
@@ -146,7 +146,7 @@
     <div class="drag" data-i18n="drag"></div>
   </section>
 
-  <section class="rsvp" id="rsvp" data-screen-label="07 RSVP">
+  <section class="rsvp snap" id="rsvp" data-screen-label="07 RSVP" data-nav="rsvp">
     <div class="heading" data-reveal>
       <div class="rule"></div>
       <h2 class="h2" data-i18n="rsvp"></h2>
@@ -177,7 +177,7 @@
         </div>
         <div class="field">
           <label class="flabel" for="fNote" data-i18n="note"></label>
-          <textarea class="input textarea" id="fNote" name="note" rows="3" maxlength="500"></textarea>
+          <textarea class="input textarea" id="fNote" name="note" rows="2" maxlength="500"></textarea>
         </div>
         <div class="hp" aria-hidden="true">
           <label for="fWebsite">Leave this empty</label>
@@ -194,15 +194,19 @@
     </div>
   </section>
 
-  <section class="credits" data-screen-label="08 Credits">
+  <section class="credits snap" data-screen-label="08 Credits" data-nav="credits">
     <div id="credits" class="credits-list"></div>
     <div class="credits-line"></div>
     <div class="credits-names"><span data-name="groom"></span> &amp; <span data-name="bride"></span></div>
   </section>
 </main>
 
-<script src="js/config.js?v=20261001b"></script>
-<script src="js/i18n.js?v=20261001b"></script>
-<script src="js/app.js?v=20261001b"></script>
+<!-- chapter navigation: dots (wide screens) + a floating label that names the chapter you just arrived at -->
+<nav class="chapters" id="chapters" aria-label="Chapters"></nav>
+<div class="island" id="island" aria-live="polite"><span class="island-n" id="islandN"></span><span class="island-t" id="islandT"></span></div>
+
+<script src="js/config.js?v=20261001c"></script>
+<script src="js/i18n.js?v=20261001c"></script>
+<script src="js/app.js?v=20261001c"></script>
 </body>
 </html>

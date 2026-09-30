@@ -59,6 +59,7 @@
     renderEvents();
     renderCredits();
     renderRsvp();
+    if (window.__nav) window.__nav.refresh();
   }
   $('#langToggle').addEventListener('click', () => {
     state.lang = state.lang === 'ml' ? 'en' : 'ml';
@@ -70,7 +71,7 @@
   const intro = $('#intro');
   let opening = false;
   const introTimers = [];
-  function finishIntro() { intro.remove(); document.body.style.overflow = ''; }
+  function finishIntro() { intro.remove(); document.body.style.overflow = ''; document.body.classList.add('ready'); if (window.__nav) window.__nav.refresh(); }
   function openInvitation() {
     if (opening) return;
     opening = true;
@@ -108,7 +109,7 @@
   function renderEvents() {
     const t = L(), en = C.NAMES.en, couple = `${en.groom} & ${en.bride}`;
     eventsEl.innerHTML = EVENTS.map((ev, i) => `
-      <section class="event" data-screen-label="0${i + 4} ${esc(T.en.ev[i])}">
+      <section class="event snap${i === 2 ? ' evening' : ''}" data-nav="ev${i}" data-screen-label="0${i + 4} ${esc(T.en.ev[i])}">
         <div class="event-head" data-reveal>
           <div class="eyebrow">${esc(t.chapter)} ${ROMAN[i]}</div>
           <h2 class="event-title">${esc(t.ev[i])}</h2>
@@ -259,6 +260,116 @@
     renderRsvp();
   });
 
+  /* ---------- Chapters: which one is showing, the stacking "cover", dots + floating label ---------- */
+  const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nav = window.__nav = {
+    secs: [], covers: [], active: -1, islandTimer: null,
+    label(sec) {
+      const t = L(), n = names(), k = sec.dataset.nav;
+      if (k === 'hero') return `${n.groom} & ${n.bride}`;
+      if (/^ev\d$/.test(k)) { const i = +k[2]; return `${t.chapter} ${ROMAN[i]} · ${t.ev[i]}`; }
+      return { countdown: t.countdown, us: t.us, moments: t.moments, rsvp: t.rsvp, credits: t.thanks }[k] || '';
+    },
+    refresh() {
+      this.secs = $$('.snap');
+      this.covers = this.secs.map(() => -1);
+      const H = innerHeight;
+      this.secs.forEach(sec => { sec.classList.remove('tall'); });
+      this.secs.forEach(sec => { if (sec.scrollHeight > H + 2) sec.classList.add('tall'); });   // too tall to pin: scrolls normally
+      document.documentElement.classList.toggle('has-tall', this.secs.some(sec => sec.classList.contains('tall')));
+      // lock-in markers at each chapter's start (its place in the flow, which pinning does not move)
+      let rail = $('#snapRail');
+      if (!rail) { rail = document.createElement('div'); rail.id = 'snapRail'; rail.className = 'snap-rail'; rail.setAttribute('aria-hidden', 'true'); $('main').prepend(rail); }
+      let y = this.secs.length ? this.secs[0].offsetTop : 0;
+      rail.innerHTML = this.secs.map(sec => { const h = sec.offsetHeight, m = `<i style="top:${y}px;height:${h}px"></i>`; y += h; return m; }).join('');
+      rail.style.height = y + 'px';
+      $('#chapters').innerHTML = this.secs.map((sec, i) => `<button type="button" data-i="${i}" aria-label="${esc(this.label(sec))}"${i === this.active ? ' aria-current="true"' : ''}><i></i></button>`).join('');
+      this.active = -1;
+    },
+    frame() {
+      const secs = this.secs, H = innerHeight;
+      if (!secs.length) return;
+      const tops = secs.map(sec => sec.getBoundingClientRect().top);        // all reads first…
+      let active = 0;
+      tops.forEach((t, i) => { if (t <= H * 0.45) active = i; });
+      secs.forEach((sec, i) => {                                            // …then writes
+        const c = reduceMotion || i === secs.length - 1 ? 0 : Math.min(1, Math.max(0, 1 - tops[i + 1] / H));
+        const q = Math.round(c * 200) / 200;
+        if (q !== this.covers[i]) {
+          const wasCovered = this.covers[i] >= 0.98, isCovered = q >= 0.98;
+          if (wasCovered !== isCovered) sec.querySelectorAll('video').forEach(v => {    // no playing under another card
+            if (isCovered) v.pause(); else if (v.dataset.onscreen === '1') { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+          });
+          this.covers[i] = q;
+          sec.style.setProperty('--cover', q);
+          sec.style.transform = q && !sec.classList.contains('tall') ? `scale(${1 - 0.06 * q})` : '';
+        }
+      });
+      this.heroHidden = this.covers[0] >= 0.98;
+      if (active !== this.active) this.setActive(active);
+    },
+    setActive(i) {
+      this.active = i;
+      $$('#chapters button').forEach((b, j) => b.setAttribute('aria-current', j === i ? 'true' : 'false'));
+      if (!document.body.classList.contains('ready') || i === 0) { $('#island').classList.remove('show'); return; }
+      $('#islandN').textContent = String(i + 1).padStart(2, '0');
+      $('#islandT').textContent = this.label(this.secs[i]);
+      const isl = $('#island'); isl.classList.add('show');
+      clearTimeout(this.islandTimer); this.islandTimer = setTimeout(() => isl.classList.remove('show'), 1800);
+    }
+  };
+  $('#chapters').addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    const m = $$('#snapRail i')[+b.dataset.i];              // the marker, not the (pinned) chapter itself
+    if (m) scrollTo({ top: parseFloat(m.style.top), behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  // Desktop wheel / trackpad: one gesture = one chapter. (Touch screens use the browser's own snapping, which already
+  // moves one chapter per flick.) A trackpad keeps sending momentum events after the swipe; those are ignored until
+  // the wheel has been quiet for a moment, so one swipe can never skip two chapters. Off for reduced motion.
+  const finePointer = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
+  nav.index = () => {
+    const rail = $$('#snapRail i'); let best = 0, bd = Infinity;
+    rail.forEach((m, i) => { const d = Math.abs(parseFloat(m.style.top) - scrollY); if (d < bd) { bd = d; best = i; } });
+    return best;
+  };
+  nav.go = i => { const m = $$('#snapRail i')[i]; if (m) scrollTo({ top: parseFloat(m.style.top), behavior: 'smooth' }); };
+  if (finePointer && !reduceMotion) {
+    let acc = 0, last = 0, armed = true, lockUntil = 0;
+    addEventListener('wheel', e => {
+      if (e.ctrlKey || !document.body.classList.contains('ready') || document.documentElement.classList.contains('snap-off')) return;
+      const now = performance.now(), gap = now - last; last = now;
+      const cur = nav.index(), sec = nav.secs[cur], dir = Math.sign(e.deltaY);
+      if (sec && sec.classList.contains('tall')) {           // a tall chapter scrolls normally until its edge
+        const top = parseFloat($$('#snapRail i')[cur].style.top), bottom = top + sec.offsetHeight - innerHeight;
+        if ((dir > 0 && scrollY < bottom - 2) || (dir < 0 && scrollY > top + 2)) return;
+      }
+      e.preventDefault();
+      if (gap > 200) { acc = 0; armed = true; }              // a new gesture
+      if (!armed || now < lockUntil) return;
+      acc += e.deltaY;
+      if (Math.abs(acc) < 24) return;
+      const next = Math.min(nav.secs.length - 1, Math.max(0, cur + Math.sign(acc)));
+      acc = 0; armed = false; lockUntil = now + 650;
+      if (next !== cur) nav.go(next);
+    }, { passive: false });
+  }
+  let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => nav.refresh(), 200); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => nav.refresh());
+  // Keyboard focus (Tab / Shift+Tab) into a chapter that is pinned underneath another: bring that chapter to the
+  // front, otherwise the browser thinks the field is on screen and it stays hidden under the card above it.
+  document.addEventListener('focusin', e => {
+    const sec = e.target.closest && e.target.closest('.snap'); if (!sec || !nav.index) return;
+    const i = nav.secs.indexOf(sec), m = $$('#snapRail i')[i];
+    if (i >= 0 && m && i !== nav.index()) {
+      const top = parseFloat(m.style.top), inTall = sec.classList.contains('tall');
+      if (!inTall || scrollY < top || scrollY > top + sec.offsetHeight - innerHeight) scrollTo({ top, behavior: 'auto' });
+    }
+  });
+  // Typing in the RSVP form: the keyboard resizes the page, and snapping would yank the field out of view.
+  const rsvpForm = $('#rsvpForm');
+  rsvpForm.addEventListener('focusin', () => document.documentElement.classList.add('snap-off'));
+  rsvpForm.addEventListener('focusout', () => setTimeout(() => { if (!rsvpForm.contains(document.activeElement)) document.documentElement.classList.remove('snap-off'); }, 250));
+
   /* ---------- Motion: grain, portrait tilt, carousel, lamp ---------- */
   const grain = $('#grain'), portrait = $('#portrait'), carousel = $('#carousel'), stage = $('#carStage');
   grain.style.backgroundImage = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
@@ -281,7 +392,8 @@
     portrait.style.transform = `rotateY(${px * 10 + Math.sin(t * .6) * 3}deg) rotateX(${-py * 8 + off * 16}deg)`;
     const f = Math.floor(t * 16);
     if (f !== gf) { gf = f; grain.style.backgroundPosition = `${Math.random() * 220}px ${Math.random() * 220}px`; }
-    if (three) three(t);
+    nav.frame();
+    if (three && !nav.heroHidden) three(t);      // the lamp stops drawing while its chapter is covered
   })();
 
   async function initThree() {
@@ -357,7 +469,9 @@
     });
     const vio = new IntersectionObserver(es => es.forEach(en => {
       const v = en.target;
-      if (en.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+      v.dataset.onscreen = en.isIntersecting ? '1' : '0';
+      const sec = v.closest('.snap'), covered = sec && window.__nav && window.__nav.covers[window.__nav.secs.indexOf(sec)] >= 0.98;
+      if (en.isIntersecting && !covered) { if (v.preload === 'none') v.preload = 'auto'; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
       else v.pause();
     }), { threshold: 0.05 });
     vids.forEach(v => vio.observe(v));

@@ -76,7 +76,7 @@ html[lang="en"] .lang-en, html[lang="ml"] .lang-ml { background: var(--wine); co
 .btn-open:hover { background: #f1d9a0; }
 .skip { position: absolute; top: calc(8vh + 14px); right: 16px; background: transparent; border: 1px solid rgba(212,162,74,.45); color: #d8c7a6; font: 500 11px/1 var(--f-body); letter-spacing: .14em; padding: 10px 14px; border-radius: 999px; cursor: pointer; transition: opacity .5s; }
 
-main { position: relative; overflow: hidden; }
+main { position: relative; }   /* no overflow here: overflow:hidden would stop the chapters pinning (sticky) — each chapter clips itself */
 
 /* Shared type */
 .eyebrow-gold { font: 500 11px/1.6 var(--f-body); letter-spacing: var(--track); color: #d4a24a; text-transform: uppercase; }
@@ -208,3 +208,168 @@ a.btn-maps, a.btn-maps:hover { display: flex; align-items: center; justify-conte
 .cv { font: italic 400 21px/1.4 var(--f-ital); color: #e3d3b4; }
 .credits-line { width: 1px; height: 56px; background: linear-gradient(#d4a24a00,#d4a24a); }
 .credits-names { font: 500 24px/1.3 var(--f-disp); color: #d4a24a; }
+
+/* ======================================================================
+   Chapters: full-screen sections that lock in one at a time (native CSS
+   scroll-snap — no scroll-jacking), stacking like cards: each chapter slides
+   up over the last, which stays pinned and settles back into the dark.
+   ====================================================================== */
+html { scroll-snap-type: y mandatory; }
+html.snap-off { scroll-snap-type: none; }            /* while typing in the RSVP form (the keyboard resizes the page) */
+#events { display: contents; }                        /* the chapter sections stack with their siblings */
+
+.snap {
+  min-height: 100vh; min-height: 100svh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: sticky; top: 0;
+  transform-origin: 50% 0;
+  box-shadow: 0 -14px 30px -20px rgba(28, 8, 6, .5);
+  border-radius: 26px 26px 0 0;
+  overflow: hidden;
+}
+.snap.hero { border-radius: 0; box-shadow: none; justify-content: flex-start; }
+/* the gold band that used to sit between sections is now each card's top edge */
+.snap:not(.hero)::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; z-index: 3;
+  background: linear-gradient(#b8862b 0 2px, transparent 2px 3px, #b8862b 3px 5px, #5e1414 5px 6px);
+  opacity: .9;
+}
+/* a chapter being covered by the next one dims (set by --cover, 0 → 1, from app.js) */
+.snap::after {
+  content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: #1c0806; opacity: calc(var(--cover, 0) * .55);
+}
+/* a chapter taller than the screen (e.g. the RSVP form on a small phone) scrolls normally instead of pinning */
+.snap.tall { position: relative; border-radius: 26px 26px 0 0; }
+.countdown.snap { background: var(--paper); }
+.portrait-sec.snap { background: #f7f0e2; }
+.event.snap { background: var(--paper); }
+.rsvp.snap { background: var(--paper); }
+.credits.snap { justify-content: center; }
+
+/* ---------- Chapter III — the reception, in evening colours ---------- */
+.event.evening { background: radial-gradient(ellipse 80% 55% at 50% 30%, #4a1a0c 0%, #2a0c07 45%, #140503 85%); }
+.evening .eyebrow { color: #d4a24a; }
+.evening .event-title { color: #f6efe0; }
+.evening .face { background: #221008; border-color: rgba(212,162,74,.38); }
+.evening .front { box-shadow: 0 30px 70px -26px rgba(0,0,0,.8), 0 0 0 1px rgba(212,162,74,.12), 0 0 60px -20px rgba(212,162,74,.25); }
+.evening .card-band { background: linear-gradient(#d4a24a 0 2px,transparent 2px 4px,#d4a24a 4px 10px,#8a2a1a 10px 11px,transparent 11px 13px,#d4a24a 13px 16px); }
+.evening .day { color: #e2b45c; text-shadow: 0 0 24px rgba(226,180,92,.25); }
+.evening .month { color: #f1d9a0; }
+.evening .weekday { color: #cbb896; }
+.evening .time-row { background: rgba(212,162,74,.12); }
+.evening .label { color: #d4a24a; }
+.evening .time, .evening .venue, .evening .back-venue { color: #f6efe0; }
+.evening .address { color: #cbb896; }
+.evening a.btn-dir, .evening a.btn-dir:hover, .evening a.btn-maps, .evening a.btn-maps:hover { background: #d4a24a; color: #1c0806; }
+.evening a.btn-dir:hover { background: #f1d9a0; }
+.evening .btn-line, .evening a.btn-line:hover, .evening .btn-back { color: #f1d9a0; border-color: rgba(212,162,74,.7); }
+.evening .btn-line:hover, .evening a.btn-line:hover { background: rgba(212,162,74,.14); }
+.evening .back-head { border-bottom-color: rgba(212,162,74,.3); }
+.evening .map { background: #1c0806; }
+.evening .map iframe { filter: sepia(.35) saturate(.9) brightness(.9); }
+/* a few slow-twinkling lights behind the evening card */
+.evening::before { opacity: 1; }
+.evening .event-head::before {
+  content: ""; position: absolute; inset: -40vh -50vw; pointer-events: none; z-index: -1;
+  background-image: radial-gradient(1.5px 1.5px at 12% 18%, #f1d9a0, transparent), radial-gradient(1px 1px at 78% 12%, #f1d9a0, transparent),
+    radial-gradient(1.5px 1.5px at 88% 46%, #e2b45c, transparent), radial-gradient(1px 1px at 22% 62%, #f1d9a0, transparent),
+    radial-gradient(1px 1px at 55% 8%, #fff4d6, transparent), radial-gradient(1.5px 1.5px at 6% 84%, #e2b45c, transparent);
+  animation: twinkle 5s ease-in-out infinite alternate;
+}
+.event-head { position: relative; }
+@keyframes twinkle { from { opacity: .45; } to { opacity: 1; } }
+
+/* ---------- chapter navigation ---------- */
+.chapters { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 70; display: flex; flex-direction: column; gap: 4px; opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+body.ready .chapters { opacity: 1; pointer-events: auto; }
+.chapters button { width: 28px; height: 28px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.chapters button i { display: block; width: 7px; height: 7px; border-radius: 99px; background: rgba(184,134,43,.45); box-shadow: 0 0 0 1px rgba(246,239,224,.5); transition: height .3s cubic-bezier(.2,.7,.2,1), background .3s ease; }
+.chapters button[aria-current="true"] i { height: 22px; background: #b8862b; }
+.chapters button:focus-visible { outline: 2px solid #b8862b; outline-offset: 2px; border-radius: 6px; }
+.island {
+  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); z-index: 75; pointer-events: none;
+  transform: translate(-50%, 16px); opacity: 0; transition: opacity .35s ease-out, transform .45s cubic-bezier(.2,.7,.2,1);
+  display: flex; align-items: center; gap: 10px; padding: 9px 16px 9px 10px; border-radius: 999px;
+  background: rgba(28,8,6,.86); color: #f6efe0; border: 1px solid rgba(212,162,74,.45);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 12px 30px -12px rgba(0,0,0,.6);
+  white-space: nowrap; max-width: calc(100vw - 32px);
+}
+.island.show { opacity: 1; transform: translate(-50%, 0); }
+.island-n { font: 600 11px/1 Manrope, sans-serif; letter-spacing: .12em; color: #1c0806; background: #d4a24a; border-radius: 99px; padding: 5px 7px; }
+.island-t { font: 500 14px/1.2 var(--f-disp); letter-spacing: .04em; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- fit every chapter on one screen, down to small phones ---------- */
+.card { height: min(540px, calc(100svh - 230px)); min-height: 430px; }
+.portrait-wrap { max-width: min(320px, calc((100svh - 250px) / 1.5 + 24px)); }
+.countdown { padding-top: 60px; padding-bottom: 60px; }
+.portrait-sec { padding-top: 60px; padding-bottom: 80px; }
+.event { padding-top: 40px; padding-bottom: 40px; }
+.moments { padding-top: 60px; padding-bottom: 60px; }
+.rsvp { padding-top: 60px; padding-bottom: 70px; }
+@media (max-height: 740px) {
+  .event { gap: 18px; }
+  .event-title { font-size: 26px; }
+  .day { font-size: 68px; }
+  .card-body { padding: 20px 20px 18px; }
+  .time-row { margin-top: 14px; }
+  .venue-label { margin-top: 14px; }
+  .h2 { font-size: 28px; }
+}
+@media (min-width: 900px) { .island { display: none; } }
+@media (max-width: 899px) { .chapters { display: none; } }
+
+/* ---------- reduced motion: gentle snapping, no stacking or dimming ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: y proximity; }
+  .snap { position: relative; scroll-snap-stop: normal; }
+  .snap::after { display: none; }
+  .island, .chapters button i, .evening .event-head::before { transition: none; animation: none; }
+}
+
+/* ---------- the opening chapter fits exactly one screen: the lamp takes whatever height is left ---------- */
+.hero.snap { height: 100vh; height: 100svh; min-height: 0; padding-top: 64px; padding-bottom: 28px; }
+.hero .lamp { flex: 1 1 0; height: auto; min-height: 150px; max-height: 46svh; }
+.hero-tail { padding-top: 18px; }
+@media (max-height: 760px) {
+  .hero.snap { padding-top: 56px; padding-bottom: 18px; }
+  .hero-tail { display: none; }
+  .hero-invite { font-size: 18px; margin-top: 10px; }
+  .dates { margin-top: 18px; }
+  .rsvp.snap { padding-top: 44px; padding-bottom: 36px; gap: 16px; }
+  .rsvp-card { padding: 20px 18px; }
+  .form { gap: 13px; }
+  .input { min-height: 46px; }
+  .textarea { min-height: 0; }
+  .step { width: 44px; height: 44px; }
+  .btn-send { min-height: 50px; }
+}
+/* a chapter taller than the screen keeps its lock-in marker as tall as itself, so it scrolls freely inside and locks at its edges */
+
+/* The lock-in points. Pinned (sticky) chapters always sit at the top of the screen, so the browser would treat
+   every position as "on a chapter" and never snap. Snapping is therefore done on a column of invisible markers that
+   stay where each chapter BEGINS; app.js sizes them to the chapters. */
+.snap-rail { position: absolute; left: 0; top: 0; width: 1px; pointer-events: none; }
+.snap-rail i { position: absolute; left: 0; width: 1px; display: block; scroll-snap-align: start; scroll-snap-stop: always; }
+@media (prefers-reduced-motion: reduce) { .snap-rail i { scroll-snap-stop: normal; } }
+
+/* the countdown chapter: bigger numbers, framed by gold ornaments */
+.ornament { width: min(240px, 62vw); height: 24px; color: #b8862b; opacity: .85; }
+.countdown .countdown-inner { gap: 30px; max-width: 480px; }
+.countdown .cd-cell { padding: 24px 0 20px; box-shadow: 0 18px 40px -26px rgba(60,30,10,.35); }
+.countdown .cd-v { font-size: clamp(34px, 10vw, 48px); }
+.countdown .until { font-size: 21px; }
+@media (max-height: 740px) { .countdown .countdown-inner { gap: 20px; } .countdown .cd-cell { padding: 18px 0 14px; } }
+/* very short screens (iPhone SE 1st gen, 568px): compact chapters so every card fits */
+@media (max-height: 620px) {
+  .card { min-height: 0; height: calc(100svh - 150px); }
+  .event { gap: 12px; padding-top: 28px; padding-bottom: 20px; }
+  .event-title { font-size: 22px; }
+  .day { font-size: 54px; }
+  .card-body { padding: 14px 16px 14px; }
+  .address { font-size: 15px; }
+  a.btn-dir { min-height: 44px; }
+  .btn-line { min-height: 44px; }
+  .credits.snap { gap: 20px; padding-top: 50px; padding-bottom: 50px; }
+  .credits-list { gap: 20px; }
+}

@@ -98,9 +98,35 @@ function doPost(e) {
   }
 }
 
-/** Opening the /exec URL in a browser shows this — a quick check that the deployment is live. */
-function doGet() {
-  return json({ ok: true, service: 'wedding-rsvp' });
+/**
+ * Opening the /exec URL in a browser shows a hello — a quick check that the deployment is live.
+ * With ?action=list&key=<READ_KEY> it returns the RSVPs (for the wedding-sender app to tick off who replied).
+ * The key lives in Project Settings → Script properties → READ_KEY (run makeReadKey() once to create it);
+ * without the right key the list is never returned, because it holds guests' phone numbers.
+ */
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  if (p.action !== 'list') return json({ ok: true, service: 'wedding-rsvp' });
+  const key = PropertiesService.getScriptProperties().getProperty('READ_KEY');
+  if (!key || !p.key || p.key !== key) return json({ ok: false, error: 'key' });
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET);
+  const last = sh ? sh.getLastRow() : 0;
+  const rows = last > 1 ? sh.getRange(2, 1, last - 1, HEADERS.length).getValues() : [];
+  return json({
+    ok: true,
+    rsvps: rows.filter(r => r[2]).map(r => ({
+      submitted: r[0] instanceof Date ? r[0].toISOString() : String(r[0]),
+      updated: r[1] instanceof Date ? r[1].toISOString() : String(r[1] || ''),
+      name: String(r[2]), phone: String(r[3]), attending: String(r[4]), guests: Number(r[5]) || 0
+    }))
+  });
+}
+
+/** Run once: creates the READ_KEY and prints it (View → Logs / Execution log). Paste it into the wedding-sender Settings. */
+function makeReadKey() {
+  const key = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  PropertiesService.getScriptProperties().setProperty('READ_KEY', key);
+  Logger.log('READ_KEY = ' + key);
 }
 
 /** A value starting with = + - @ would be run by Sheets as a formula; the apostrophe keeps it as text. */

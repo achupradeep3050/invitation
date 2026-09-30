@@ -31,6 +31,9 @@
   const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
     : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
 
+  // ?lang=ml / ?lang=en in the link (the WhatsApp invitations use it) wins over the remembered choice.
+  const urlLang = new URLSearchParams(location.search).get('lang');
+  if (urlLang === 'ml' || urlLang === 'en') store.set(KEY_LANG, urlLang);
   const state = {
     lang: store.get(KEY_LANG) === 'ml' ? 'ml' : 'en',
     flips: [false, false, false],

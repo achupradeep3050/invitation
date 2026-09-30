@@ -1,4 +1,4 @@
-/* Achu & Lekshmi — behaviour, ported from the Claude Design prototype (Wedding Invitation v3). */
+/* Achu & Lekshmi — behaviour, ported from the Claude Design prototype (Wedding Invitation v2). */
 (function () {
   'use strict';
 
@@ -49,18 +49,6 @@
 
   document.documentElement.style.setProperty('--photo-filter', FILTERS[C.PHOTO_STYLE] || 'none');
 
-
-  const POSTERS = [
-    { src: 'assets/story/poster-1.jpg', alt: 'Our Story poster' },
-    { src: 'assets/story/poster-2.jpg', alt: 'Laughing together' },
-    { src: 'assets/story/poster-3.jpg', alt: 'Secret garden' },
-    { src: 'assets/story/poster-4.jpg', alt: 'Save the date poster' },
-    { src: 'assets/story/poster-5.jpg', alt: 'Save the date, city night' }
-  ];
-  const NCARDS = 9;
-  const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const scroller = $('#scroller');
-
   /* ---------- Language ---------- */
   function applyLang() {
     const t = L(), n = names();
@@ -69,10 +57,8 @@
     $$('[data-name]').forEach(el => { el.textContent = n[el.dataset.name]; });
     renderCountdownLabels();
     renderEvents();
-    renderReception();
     renderCredits();
     renderRsvp();
-    renderDots();
   }
   $('#langToggle').addEventListener('click', () => {
     state.lang = state.lang === 'ml' ? 'en' : 'ml';
@@ -84,7 +70,7 @@
   const intro = $('#intro');
   let opening = false;
   const introTimers = [];
-  function finishIntro() { intro.remove(); document.body.classList.add('ready'); }
+  function finishIntro() { intro.remove(); document.body.style.overflow = ''; }
   function openInvitation() {
     if (opening) return;
     opening = true;
@@ -95,6 +81,7 @@
   }
   if (C.SHOW_INTRO === false) finishIntro();
   else {
+    document.body.style.overflow = 'hidden';
     [300, 2600, 4600].forEach((ms, i) => introTimers.push(setTimeout(() => { if (!opening) intro.dataset.stage = String(i + 1); }, ms)));
     $$('[data-open]', intro).forEach(b => b.addEventListener('click', openInvitation));
   }
@@ -113,73 +100,62 @@
   tick();
   setInterval(tick, 1000);
 
-  /* ---------- Chapters I–III: flip cards (III, the reception, is the evening card) ---------- */
+  /* ---------- Event chapters (flip cards) ---------- */
   const calUrl = (text, dates, loc) => `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${dates}&ctz=Asia/Kolkata&location=${encodeURIComponent(loc)}`;
   const mapEmbed = q => `https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=15&output=embed`;
-  const mapFrame = ev => `<iframe src="${esc(mapEmbed(ev.q))}" loading="lazy" title="${esc(ev.venue)} map" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-  const couple = () => `${C.NAMES.en.groom} & ${C.NAMES.en.bride}`;
+  const eventsEl = $('#events');
 
-  function flipCardHTML(ev, i, t, extraFront = '') {
-    const f = state.flips[i];
-    return `
-      <div class="flip${f ? ' flipped' : ''}" data-flipcard="${i}">
-        <div class="face front"${f ? ' aria-hidden="true"' : ''}>
-          ${extraFront}
-          <div class="card-band"></div>
-          <div class="card-body">
-            <div class="date-row">
-              <div class="day">${ev.day}</div>
-              <div class="date-meta"><div class="month">${esc(t.month)}</div><div class="weekday">${esc(t.wd[i])}</div></div>
-            </div>
-            <div class="time-row"><div class="label">${esc(t.time)}</div><div class="time">${esc(ev.time)}</div></div>
-            <div class="label venue-label">${esc(t.venue)}</div>
-            <div class="venue">${esc(ev.venue)}</div>
-            <div class="address">${esc(ev.address)}</div>
-            <div class="actions">
-              <a class="btn-dir" href="${esc(ev.dir)}" target="_blank" rel="noopener">${esc(t.directions)}</a>
-              <div class="action-pair">
-                <button class="btn-line" type="button" data-flip="${i}">${esc(t.viewMap)}</button>
-                <a class="btn-line" href="${esc(calUrl(`${T.en.ev[i]} · ${couple()}`, ev.dates, ev.loc))}" target="_blank" rel="noopener">${esc(t.calendar)}</a>
+  function renderEvents() {
+    const t = L(), en = C.NAMES.en, couple = `${en.groom} & ${en.bride}`;
+    eventsEl.innerHTML = EVENTS.map((ev, i) => `
+      <section class="event" data-screen-label="0${i + 4} ${esc(T.en.ev[i])}">
+        <div class="event-head" data-reveal>
+          <div class="eyebrow">${esc(t.chapter)} ${ROMAN[i]}</div>
+          <h2 class="event-title">${esc(t.ev[i])}</h2>
+        </div>
+        <div class="card-wrap" data-reveal>
+          <div class="card${i % 2 ? ' odd' : ''}${state.flips[i] ? ' flipped' : ''}" data-card="${i}">
+            <div class="face front" ${state.flips[i] ? 'aria-hidden="true"' : ''}>
+              <div class="card-band"></div>
+              <div class="card-body">
+                <div class="date-row">
+                  <div class="day">${ev.day}</div>
+                  <div class="date-meta">
+                    <div class="month">${esc(t.month)}</div>
+                    <div class="weekday">${esc(t.wd[i])}</div>
+                  </div>
+                </div>
+                <div class="time-row"><div class="label">${esc(t.time)}</div><div class="time">${esc(ev.time)}</div></div>
+                <div class="label venue-label">${esc(t.venue)}</div>
+                <div class="venue">${esc(ev.venue)}</div>
+                <div class="address">${esc(ev.address)}</div>
+                <div class="actions">
+                  <a class="btn-dir" href="${esc(ev.dir)}" target="_blank" rel="noopener">${esc(t.directions)}</a>
+                  <div class="action-pair">
+                    <button class="btn-line" type="button" data-flip="${i}">${esc(t.viewMap)}</button>
+                    <a class="btn-line" href="${esc(calUrl(`${T.en.ev[i]} · ${couple}`, ev.dates, ev.loc))}" target="_blank" rel="noopener">${esc(t.calendar)}</a>
+                  </div>
+                </div>
               </div>
             </div>
+            <div class="face back" ${state.flips[i] ? '' : 'aria-hidden="true"'}>
+              <div class="back-head">
+                <div class="back-venue">${esc(ev.venue)}</div>
+                <button class="btn-back" type="button" data-flip="${i}">${esc(t.back)}</button>
+              </div>
+              <div class="map">${state.flips[i] ? mapFrame(ev) : ''}</div>
+              <a class="btn-maps" href="${esc(ev.dir)}" target="_blank" rel="noopener">${esc(t.openMaps)}</a>
+            </div>
           </div>
-        </div>
-        <div class="face back"${f ? '' : ' aria-hidden="true"'}>
-          <div class="back-head"><div class="back-venue">${esc(ev.venue)}</div><button class="btn-back" type="button" data-flip="${i}">${esc(t.back)}</button></div>
-          <div class="map">${f ? mapFrame(ev) : ''}</div>
-          <a class="btn-maps" href="${esc(ev.dir)}" target="_blank" rel="noopener">${esc(t.openMaps)}</a>
-        </div>
-      </div>`;
-  }
-  const eventsEl = $('#events');
-  function renderEvents() {
-    const t = L();
-    eventsEl.innerHTML = EVENTS.slice(0, 2).map((ev, i) => `
-      <section class="chapter" data-nav="${i + 3}" data-screen-label="0${i + 4} ${esc(T.en.ev[i])}">
-        <div class="card event scrolly" data-card>
-          <div class="event-head" data-reveal>
-            <div class="eyebrow">${esc(t.chapter)} ${ROMAN[i]}</div>
-            <h2 class="event-title">${esc(t.ev[i])}</h2>
-          </div>
-          <div class="flip-wrap" data-reveal>${flipCardHTML(ev, i, t)}</div>
         </div>
       </section>`).join('');
-    afterRender(eventsEl);
+    if (revealReady) $$('[data-reveal]', eventsEl).forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
   }
-  const recCard = $('#recCard');
-  function renderReception() {
-    const t = L();
-    recCard.innerHTML = `
-      <div class="event-head" data-reveal>
-        <div class="eyebrow">${esc(t.chapter)} ${ROMAN[2]}</div>
-        <h2 class="event-title">${esc(t.ev[2])}</h2>
-      </div>
-      <div class="flip-wrap" data-reveal><div class="rec-tilt" id="recTilt">${flipCardHTML(EVENTS[2], 2, t, '<div class="rec-glow"></div><div class="rec-gloss" id="recGloss"></div>')}</div></div>`;
-    afterRender(recCard);
-  }
-  document.addEventListener('click', e => {
+  const mapFrame = ev => `<iframe src="${esc(mapEmbed(ev.q))}" loading="lazy" title="${esc(ev.venue)} map" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+  eventsEl.addEventListener('click', e => {
     const b = e.target.closest('[data-flip]'); if (!b) return;
-    const i = Number(b.dataset.flip), card = $(`[data-flipcard="${i}"]`);
+    const i = Number(b.dataset.flip), card = $(`[data-card="${i}"]`, eventsEl);
     state.flips[i] = !state.flips[i];
     card.classList.toggle('flipped', state.flips[i]);
     $('.front', card).toggleAttribute('aria-hidden', state.flips[i]);
@@ -187,43 +163,11 @@
     $('.map', card).innerHTML = state.flips[i] ? mapFrame(EVENTS[i]) : '';
   });
 
-  /* ---------- Chapter: Our Story — the poster stack (tap: next; swipe right: back) ---------- */
-  const stack = $('#stack'), stackDots = $('#stackDots');
-  const posterOrder = [0, 1, 2, 3, 4];
-  let leaving = null, leaveT = null;
-  stack.innerHTML = POSTERS.map((p, id) => `<div class="poster" data-poster="${id}"><img src="${esc(p.src)}" alt="${esc(p.alt)}" draggable="false"${id > 1 ? ' loading="lazy"' : ''}></div>`).join('');
-  stackDots.innerHTML = POSTERS.map(() => '<span></span>').join('');
-  const posTf = ['', ' translate(18px,12px) rotate(4deg) scale(.94)', ' translate(-18px,20px) rotate(-5deg) scale(.88)', ' translateY(26px) scale(.82)', ' translateY(26px) scale(.82)'];
-  function renderStack() {
-    const base = 'translate(-50%,-50%)';
-    $$('.poster', stack).forEach(el => {
-      const id = +el.dataset.poster, pos = posterOrder.indexOf(id), isLeaving = leaving === id;
-      el.style.transform = isLeaving ? `${base} translateX(-135%) rotate(-16deg)` : base + posTf[pos];
-      el.style.zIndex = isLeaving ? 10 : 6 - pos;
-      el.style.opacity = isLeaving ? 0 : (pos > 2 ? 0 : 1);
-      el.setAttribute('aria-hidden', pos === 0 && !isLeaving ? 'false' : 'true');
-    });
-    $$('span', stackDots).forEach((d, id) => d.classList.toggle('on', id === posterOrder[0]));
-  }
-  function posterNext() {
-    if (leaving != null) return;
-    leaving = posterOrder[0]; renderStack();
-    leaveT = setTimeout(() => { posterOrder.push(posterOrder.shift()); leaving = null; renderStack(); }, 420);
-  }
-  function posterPrev() { if (leaving != null) return; posterOrder.unshift(posterOrder.pop()); renderStack(); }
-  let sx = null;
-  stack.addEventListener('pointerdown', e => { sx = e.clientX; });
-  stack.addEventListener('pointerup', e => { const dx = e.clientX - (sx == null ? e.clientX : sx); sx = null; if (dx > 30) posterPrev(); else posterNext(); });
-  stack.addEventListener('keydown', e => {                         // added: keyboard
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); posterNext(); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); posterPrev(); }
-  });
-  renderStack();
-
   /* ---------- Credits ---------- */
   function renderCredits() {
-    $('#credits').innerHTML = L().cr.map(([k, v]) => `<div class="credit" data-reveal><div class="ck">${esc(k)}</div><div class="cv">${esc(v)}</div></div>`).join('');
-    afterRender($('#credits'));
+    $('#credits').innerHTML = L().cr.map(([k, v]) =>
+      `<div class="credit" data-reveal><div class="ck">${esc(k)}</div><div class="cv">${esc(v)}</div></div>`).join('');
+    if (revealReady) $$('#credits [data-reveal]').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
   }
 
   /* ---------- RSVP ---------- */
@@ -315,93 +259,13 @@
     renderRsvp();
   });
 
-
-  /* ---------- The scroller: which chapter is showing, cards settling back, dots ---------- */
-  const rail = $('#rail');
-  rail.innerHTML = Array.from({ length: NCARDS }, () => '<i></i>').join('');
-  let active = 0;
-  const H = () => scroller.clientHeight || innerHeight;
-  const goTo = (i, smooth = !reduceMotion) => scroller.scrollTo({ top: i * H(), behavior: smooth ? 'smooth' : 'auto' });
-  const index = () => Math.min(NCARDS - 1, Math.max(0, Math.round(scroller.scrollTop / H())));
-  function renderDots() {
-    $('#dots').innerHTML = L().cards.map((c, i) => `<button type="button" data-i="${i}" aria-label="${esc(c)}" aria-current="${i === active}"><span></span></button>`).join('');
-  }
-  $('#dots').addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) goTo(+b.dataset.i); });
-  function setActive(a) {
-    if (a === active) return;
-    active = a;
-    $$('#dots button').forEach((b, i) => b.setAttribute('aria-current', i === a ? 'true' : 'false'));
-  }
-  const cardP = [];
-  function frameCards() {
-    const h = H(), top = scroller.scrollTop;
-    $$('.card', scroller).forEach((c, i) => {
-      const p = reduceMotion ? 0 : Math.min(1, Math.max(0, (top - i * h) / h));
-      const q = Math.round(p * 400) / 400;
-      if (cardP[i] !== q) {
-        const was = cardP[i] >= 0.98, now = q >= 0.98;
-        cardP[i] = q;
-        c.style.transform = q ? `scale(${1 - .1 * q}) translateY(${-3 * q}%)` : '';
-        c.style.opacity = q ? 1 - .6 * q : '';
-        c.style.borderRadius = q ? `${28 * q}px` : '';
-        if (was !== now) c.querySelectorAll('video').forEach(v => {            // no playing under another card
-          if (now) v.pause(); else if (v.dataset.onscreen === '1') { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
-        });
-      }
-    });
-    setActive(Math.min(NCARDS - 1, Math.round(top / h)));
-  }
-  window.__nav = { index, goTo, get active() { return active; }, covered: i => cardP[i] >= 0.98 };
-
-  // Desktop wheel / trackpad: one gesture = one chapter (Chrome's own wheel snapping springs back on a single click).
-  // A trackpad keeps sending momentum events after the swipe; those are ignored until the wheel has been quiet.
-  const finePointer = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (finePointer && !reduceMotion) {
-    let acc = 0, last = 0, armed = true, lockUntil = 0;
-    scroller.addEventListener('wheel', e => {
-      if (e.ctrlKey || scroller.classList.contains('snap-off')) return;
-      // a card with its own scroll (events, RSVP) scrolls normally until its edge
-      const inner = e.target.closest && e.target.closest('.card.scrolly');
-      if (inner && inner.scrollHeight > inner.clientHeight + 2) {
-        const dir = Math.sign(e.deltaY);
-        if ((dir > 0 && inner.scrollTop + inner.clientHeight < inner.scrollHeight - 2) || (dir < 0 && inner.scrollTop > 2)) return;
-      }
-      e.preventDefault();
-      const now = performance.now(), gap = now - last; last = now;
-      if (gap > 200) { acc = 0; armed = true; }
-      if (!armed || now < lockUntil) return;
-      acc += e.deltaY;
-      if (Math.abs(acc) < 24) return;
-      const cur = index(), next = Math.min(NCARDS - 1, Math.max(0, cur + Math.sign(acc)));
-      acc = 0; armed = false; lockUntil = now + 650;
-      if (next !== cur) goTo(next);
-    }, { passive: false });
-  }
-  // Keyboard focus (Tab / Shift+Tab) into a chapter covered by a later card: bring it to the front.
-  document.addEventListener('focusin', e => {
-    const ch = e.target.closest && e.target.closest('.chapter'); if (!ch) return;
-    const i = $$('.chapter', scroller).indexOf(ch);
-    if (i >= 0 && i !== index()) goTo(i, false);
-  });
-  // Typing in the RSVP form: the keyboard resizes the page, and snapping would yank the field away.
-  const rsvpForm = $('#rsvpForm');
-  rsvpForm.addEventListener('focusin', () => scroller.classList.add('snap-off'));
-  rsvpForm.addEventListener('focusout', () => setTimeout(() => { if (!rsvpForm.contains(document.activeElement)) scroller.classList.remove('snap-off'); }, 250));
-  addEventListener('keydown', e => {               // added: PageUp/PageDown/arrows move one chapter when nothing is focused
-    if (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
-    const k = e.key, cur = index();
-    if (k === 'PageDown' || (k === 'ArrowDown' && document.activeElement === document.body)) { e.preventDefault(); goTo(Math.min(NCARDS - 1, cur + 1)); }
-    else if (k === 'PageUp' || (k === 'ArrowUp' && document.activeElement === document.body)) { e.preventDefault(); goTo(Math.max(0, cur - 1)); }
-    else if (k === 'Home' && document.activeElement === document.body) { e.preventDefault(); goTo(0); }
-    else if (k === 'End' && document.activeElement === document.body) { e.preventDefault(); goTo(NCARDS - 1); }
-  });
-
-  /* ---------- Motion: grain, poster-stack tilt, reception tilt + sheen, carousel, lamp ---------- */
-  const grain = $('#grain'), carousel = $('#carousel'), stage = $('#carStage');
+  /* ---------- Motion: grain, portrait tilt, carousel, lamp ---------- */
+  const grain = $('#grain'), portrait = $('#portrait'), carousel = $('#carousel'), stage = $('#carStage');
   grain.style.backgroundImage = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
   let rot = 0, vel = 0.12, drag = null, px = 0, py = 0, gf = -1, three = null;
   addEventListener('pointermove', e => { px = (e.clientX / innerWidth) * 2 - 1; py = (e.clientY / innerHeight) * 2 - 1; });
   addEventListener('deviceorientation', e => { if (e.gamma != null) { px = Math.max(-1, Math.min(1, e.gamma / 30)); py = Math.max(-1, Math.min(1, (e.beta - 45) / 30)); } });
+
   stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, r: rot }; if (stage.setPointerCapture) stage.setPointerCapture(e.pointerId); });
   stage.addEventListener('pointermove', e => { if (!drag) return; const nr = drag.r + (e.clientX - drag.x) * 0.35; vel = nr - rot; rot = nr; });
   const endDrag = () => { drag = null; };
@@ -411,20 +275,13 @@
   (function loop() {
     requestAnimationFrame(loop);
     const t = performance.now() / 1000;
-    frameCards();
     if (!drag) { rot += vel; vel += (0.12 - vel) * 0.02; }
-    if (active >= 5 && active <= 7) carousel.style.transform = `translateZ(-230px) rotateY(${rot}deg)`;
-    if (!reduceMotion) {
-      if (active >= 1 && active <= 3) stack.style.transform = `rotateY(${px * 9 + Math.sin(t * .6) * 3}deg) rotateX(${-py * 7 + Math.cos(t * .5) * 2}deg)`;
-      if (active >= 4 && active <= 6) {
-        const rt = $('#recTilt'), gl = $('#recGloss');
-        if (rt) rt.style.transform = `rotateY(${px * 7}deg) rotateX(${-py * 6}deg)`;
-        if (gl) gl.style.backgroundPosition = `${50 - px * 45 + Math.sin(t * .45) * 40}% 0`;
-      }
-    }
+    carousel.style.transform = `translateZ(-230px) rotateY(${rot}deg)`;
+    const r = portrait.getBoundingClientRect(), off = (r.top + r.height / 2) / innerHeight - 0.5;
+    portrait.style.transform = `rotateY(${px * 10 + Math.sin(t * .6) * 3}deg) rotateX(${-py * 8 + off * 16}deg)`;
     const f = Math.floor(t * 16);
     if (f !== gf) { gf = f; grain.style.backgroundPosition = `${Math.random() * 220}px ${Math.random() * 220}px`; }
-    if (three && active <= 1) three(t);                                        // the lamp only draws near its chapter
+    if (three) three(t);
   })();
 
   async function initThree() {
@@ -467,9 +324,9 @@
     new ResizeObserver(resize).observe(canvas); resize();
     let ry = 0;
     three = t => {
-      const sc = Math.min(1, scroller.scrollTop / (scroller.clientHeight || 1));
+      const sc = Math.min(1, scrollY / innerHeight);
       ry += ((t * 0.25 + px * 0.5) - ry) * 0.05;
-      group.rotation.y = ry; group.rotation.x = py * 0.08 + sc * 0.25; group.position.y = Math.sin(t * 0.8) * 0.04;
+      group.rotation.y = ry; group.rotation.x = py * 0.08 + sc * 0.25; group.position.y = Math.sin(t * 0.8) * 0.04 - sc * 0.4;
       flames.forEach(({ f, s, ph }) => { const k = 1 + Math.sin(t * 9 + ph) * .12 + Math.sin(t * 23 + ph) * .06; f.scale.set(1, 2.6 * k, 1); s.scale.setScalar(0.55 * k); });
       flameLight.intensity = 6 + Math.sin(t * 11) * 0.8 + Math.sin(t * 27) * 0.4;
       const a = pg.attributes.position.array;
@@ -479,50 +336,20 @@
     };
   }
 
-  /* ---------- Motion: looping videos over the photos (only where C.MOTION has one) ---------- */
-  (function motion() {
-    const map = C.MOTION || {};
-    if (!Object.keys(map).length) return;
-    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const saveData = navigator.connection && navigator.connection.saveData;
-    if (reduce || saveData) return;                       // stills for people who asked for less motion / data
-    const vids = [];
-    $$('.photo img').forEach(img => {
-      const name = (img.getAttribute('src') || '').split('/').pop();
-      const src = map[name]; if (!src) return;
-      const v = document.createElement('video');
-      Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'none', poster: img.getAttribute('src') });
-      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
-      v.className = img.className;
-      v.src = src;
-      v.addEventListener('error', () => v.remove());       // the photo underneath stays
-      img.after(v); vids.push(v);
-    });
-    const vio = new IntersectionObserver(es => es.forEach(en => {
-      const v = en.target;
-      v.dataset.onscreen = en.isIntersecting ? '1' : '0';
-      const card = v.closest('.card'), covered = card && window.__nav && window.__nav.covered($$('.card', scroller).indexOf(card));
-      if (en.isIntersecting && !covered) { if (v.preload === 'none') v.preload = 'auto'; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-      else v.pause();
-    }), { threshold: 0.05 });
-    vids.forEach(v => vio.observe(v));
-  })();
-
-  /* ---------- Reveal on arrival ---------- */
+  /* ---------- Scroll reveal ---------- */
   let revealReady = false;
   const io = new IntersectionObserver(es => es.forEach(en => {
     if (en.isIntersecting) { en.target.style.opacity = 1; en.target.style.transform = 'none'; io.unobserve(en.target); }
-  }), { threshold: 0.2 });
-  function prepReveal(el) {
-    if (reduceMotion) return;
-    el.style.opacity = 0; el.style.transform = 'translateY(40px)';
-    el.style.transition = 'opacity 1s ease .15s, transform 1s cubic-bezier(.2,.7,.2,1) .15s';
-    io.observe(el);
-  }
-  // content re-rendered after load (language switch) is shown at once if its chapter is already on screen
-  function afterRender(root) { if (revealReady) $$('[data-reveal]', root).forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; }); }
+  }), { threshold: 0.12 });
 
   applyLang();
-  setTimeout(() => { $$('[data-reveal]').forEach(prepReveal); revealReady = true; }, 60);
+  setTimeout(() => {
+    $$('[data-reveal]').forEach(el => {
+      el.style.opacity = 0; el.style.transform = 'translateY(36px)';
+      el.style.transition = 'opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1)';
+      io.observe(el);
+    });
+    revealReady = true;
+  }, 60);
   initThree();
 })();

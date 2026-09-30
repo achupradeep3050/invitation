@@ -1,7 +1,7 @@
 # Achu & Lekshmi — wedding invitation
 
 Live at **https://achupradeep.online/invitation/** (GitHub Pages, repo `achupradeep3050/invitation`).
-A static site with no build step, recreated from the Claude Design prototype *Wedding Invitation v3* (v2 before 2026-10-01). It's bilingual (English / മലയാളം).
+A static site with no build step, recreated from the Claude Design prototype *Wedding Invitation v2*. It's bilingual (English / മലയാളം).
 RSVPs go to a **Google Sheet** through a small Apps Script.
 
 ```
@@ -42,7 +42,7 @@ same `/exec` URL. A *New deployment* makes a new URL.
 - **Names, photo style, intro:** `js/config.js`.
 - **Wording:** `js/i18n.js` (keep the `en` and `ml` keys in step).
 - **Times, venues, map links:** `EVENTS` at the top of `js/app.js`.
-- **Photos:** `assets/story/poster-1…5.jpg` are the "Our Story" poster stack (tap for the next, swipe right to go back). `assets/moments/m1…m6.jpg` are the Moments carousel. `assets/portrait-garden.jpg` is the WhatsApp/link preview and the sender app's photo. They're shown as they are (`PHOTO_STYLE: 'Original'`). ⚠️ **To change a photo, give it a NEW file name and update `index.html`/`js/app.js`.** Also bump `?v=` on the CSS/JS links. Browsers and GitHub's CDN keep old copies under an old name.
+- **Photos:** `assets/portrait-garden.jpg` is the portrait, which is also the WhatsApp/link preview and the sender app's photo. `assets/moment-*.jpg` fill the 8-tile carousel, each shown twice on opposite sides. They're shown as they are (`PHOTO_STYLE: 'Original'`). ⚠️ **To change a photo, give it a NEW file name and update `index.html`.** Also bump `?v=` on the CSS/JS links whenever you change them. Browsers and GitHub's CDN keep the old copies under an old name, so reusing a name looks like nothing changed.
 
 ## Run locally
 ```

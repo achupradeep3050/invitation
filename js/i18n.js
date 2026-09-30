@@ -3,9 +3,9 @@ window.WEDDING_T = {
   en: {
     intro1: 'Two families. One story.', introTag: 'A wedding in three chapters', open: 'Open the invitation', skip: 'SKIP',
     together: 'Together with their families', invite: 'request the pleasure of your company as they begin their life together',
-    guruvayurShort: 'GURUVAYUR', chavaraShort: 'CHAVARA', varkalaShort: 'VARKALA', decYear: 'DECEMBER 2026', swipe: 'SWIPE UP',
+    guruvayurShort: 'GURUVAYUR', chavaraShort: 'CHAVARA', varkalaShort: 'VARKALA', decYear: 'DECEMBER 2026',
     countdown: 'The countdown', units: ['DAYS', 'HOURS', 'MINUTES', 'SECONDS'], until: 'until the wedding function on 5 December',
-    us: 'Our Story', tap: 'TAP OR SWIPE', chapter: 'Chapter', time: 'TIME', venue: 'VENUE', directions: 'GET DIRECTIONS', viewMap: 'VIEW MAP', calendar: 'ADD TO CALENDAR', back: 'BACK', openMaps: 'OPEN IN GOOGLE MAPS',
+    us: 'The Two of Us', chapter: 'Chapter', time: 'TIME', venue: 'VENUE', directions: 'GET DIRECTIONS', viewMap: 'VIEW MAP', calendar: 'ADD TO CALENDAR', back: 'BACK', openMaps: 'OPEN IN GOOGLE MAPS',
     ev: ['Married at Guruvayur', 'The Wedding Function', 'The Reception'], month: 'DECEMBER 2026', wd: ['Thursday', 'Saturday', 'Sunday'],
     moments: 'Moments', drag: 'DRAG TO TURN', rsvp: 'Will You Join Us?', name: 'YOUR NAME', phone: 'PHONE', attending: 'ATTENDING', guests: 'GUESTS', note: 'A NOTE FOR THE COUPLE',
     send: 'SEND', sending: 'SENDING…', thanks: 'Thank you', edit: 'EDIT RESPONSE',
@@ -14,15 +14,14 @@ window.WEDDING_T = {
     guest1: 'guest', guestN: 'guests', errName: 'Please enter your name', errPhone: 'Enter a valid 10-digit number',
     errSend: 'We couldn’t send your RSVP. Please check your connection and try again.',
     notConnected: 'RSVP is not open yet — please check back soon.',
-    cards: ['Welcome', 'Countdown', 'Our Story', 'Guruvayur', 'Wedding', 'Reception', 'Moments', 'RSVP', 'Credits'],
     cr: [['Married at', '3 December 2026 · Guruvayur'], ['The wedding function', '5 December 2026 · Chavara'], ['The reception', '6 December 2026 · Varkala'], ['Presented by', 'Our families, with love']]
   },
   ml: {
     intro1: 'രണ്ട് കുടുംബങ്ങൾ. ഒരു കഥ.', introTag: 'മൂന്ന് അധ്യായങ്ങളിലായി ഒരു വിവാഹം', open: 'ക്ഷണക്കത്ത് തുറക്കൂ', skip: 'ഒഴിവാക്കുക',
     together: 'കുടുംബാംഗങ്ങളുടെ അനുഗ്രഹത്തോടെ', invite: 'ഞങ്ങളുടെ പുതിയ ജീവിതയാത്രയുടെ തുടക്കത്തിൽ നിങ്ങളുടെ സാന്നിധ്യം സ്നേഹപൂർവ്വം ക്ഷണിക്കുന്നു',
-    guruvayurShort: 'ഗുരുവായൂർ', chavaraShort: 'ചവറ', varkalaShort: 'വർക്കല', decYear: 'ഡിസംബർ 2026', swipe: 'മുകളിലേക്ക് നീക്കുക',
+    guruvayurShort: 'ഗുരുവായൂർ', chavaraShort: 'ചവറ', varkalaShort: 'വർക്കല', decYear: 'ഡിസംബർ 2026',
     countdown: 'കാത്തിരിപ്പ്', units: ['ദിവസം', 'മണിക്കൂർ', 'മിനിറ്റ്', 'സെക്കൻഡ്'], until: 'ഡിസംബർ 5-ലെ വിവാഹ ചടങ്ങിലേക്ക്',
-    us: 'ഞങ്ങളുടെ കഥ', tap: 'തൊടുക അല്ലെങ്കിൽ നീക്കുക', chapter: 'അധ്യായം', time: 'സമയം', venue: 'വേദി', directions: 'വഴി കാണുക', viewMap: 'മാപ്പ്', calendar: 'കലണ്ടറിൽ ചേർക്കുക', back: 'തിരികെ', openMaps: 'ഗൂഗിൾ മാപ്പിൽ തുറക്കുക',
+    us: 'ഞങ്ങൾ', chapter: 'അധ്യായം', time: 'സമയം', venue: 'വേദി', directions: 'വഴി കാണുക', viewMap: 'മാപ്പ്', calendar: 'കലണ്ടറിൽ ചേർക്കുക', back: 'തിരികെ', openMaps: 'ഗൂഗിൾ മാപ്പിൽ തുറക്കുക',
     ev: ['ഗുരുവായൂരിൽ താലികെട്ട്', 'വിവാഹ ചടങ്ങ്', 'വിവാഹ സൽക്കാരം'], month: 'ഡിസംബർ 2026', wd: ['വ്യാഴാഴ്ച', 'ശനിയാഴ്ച', 'ഞായറാഴ്ച'],
     moments: 'നിമിഷങ്ങൾ', drag: 'തിരിക്കാൻ വലിക്കുക', rsvp: 'നിങ്ങൾ വരുമോ?', name: 'പേര്', phone: 'ഫോൺ', attending: 'പങ്കെടുക്കുന്നത്', guests: 'അതിഥികൾ', note: 'ദമ്പതികൾക്കൊരു സന്ദേശം',
     send: 'അയക്കുക', sending: 'അയക്കുന്നു…', thanks: 'നന്ദി', edit: 'മറുപടി മാറ്റുക',
@@ -31,7 +30,6 @@ window.WEDDING_T = {
     guest1: 'അതിഥി', guestN: 'അതിഥികൾ', errName: 'ദയവായി പേര് നൽകുക', errPhone: 'ശരിയായ 10 അക്ക നമ്പർ നൽകുക',
     errSend: 'മറുപടി അയക്കാൻ കഴിഞ്ഞില്ല. ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.',
     notConnected: 'മറുപടി സൗകര്യം ഉടൻ ലഭ്യമാകും.',
-    cards: ['സ്വാഗതം', 'കാത്തിരിപ്പ്', 'കഥ', 'ഗുരുവായൂർ', 'വിവാഹം', 'സൽക്കാരം', 'നിമിഷങ്ങൾ', 'മറുപടി', 'നന്ദി'],
     cr: [['താലികെട്ട്', '3 ഡിസംബർ 2026 · ഗുരുവായൂർ'], ['വിവാഹ ചടങ്ങ്', '5 ഡിസംബർ 2026 · ചവറ'], ['വിവാഹ സൽക്കാരം', '6 ഡിസംബർ 2026 · വർക്കല'], ['സ്നേഹപൂർവ്വം', 'ഞങ്ങളുടെ കുടുംബങ്ങൾ']]
   }
 };

@@ -131,6 +131,13 @@ html[lang="en"] .lang-en, html[lang="ml"] .lang-ml { background: var(--wine); co
 .flip-wrap { perspective: 1400px; width: 100%; max-width: 400px; flex: none; }
 .flip { position: relative; height: min(500px, max(440px, calc(100svh - 190px))); transform-style: preserve-3d; transition: transform 1s cubic-bezier(.3,.1,.2,1); }
 .flip.flipped { transform: rotateY(180deg); }
+/* added: Safari (WebKit) ignores backface-visibility inside these scrolling cards and painted the BACK face, mirrored,
+   over the front (the whole card read "BACK … OPEN IN GOOGLE MAPS" backwards on iPhone). So the faces swap visibility
+   exactly halfway through the 1 s flip — when the card is edge-on — which works whatever the engine does with backfaces. */
+.flip .front, .flip .back { transition: visibility 0s .5s; }
+.flip .back { visibility: hidden; }
+.flip.flipped .back { visibility: visible; }
+.flip.flipped .front { visibility: hidden; }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--card); border: 1px solid var(--gold-soft); overflow: hidden; display: flex; flex-direction: column; }
 .front { box-shadow: 0 30px 60px -28px rgba(60,30,10,.45); }
 .back { transform: rotateY(180deg); }

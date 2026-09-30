@@ -10,7 +10,7 @@ window.WEDDING_CONFIG = {
   },
 
   // 'Watercolor' | 'Oil painting' | 'Film grade' | 'Original'
-  PHOTO_STYLE: 'Watercolor',
+  PHOTO_STYLE: 'Original',
 
   // The opening door animation.
   SHOW_INTRO: true

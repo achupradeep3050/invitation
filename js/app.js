@@ -37,7 +37,7 @@
   const state = {
     lang: store.get(KEY_LANG) === 'ml' ? 'ml' : 'en',
     flips: [false, false, false],
-    name: '', phone: '', guests: 2, attend: 0, note: '',
+    name: '', phone: '', guests: 4, attend: 0, note: '',
     errors: {}, sendError: '', sending: false, sent: null
   };
   try { const s = JSON.parse(store.get(KEY_RSVP) || 'null'); if (s && s.name) state.sent = s; } catch (e) {}
@@ -219,7 +219,7 @@
   guestsInc.addEventListener('click', () => { state.guests = Math.min(15, state.guests + 1); renderRsvp(); });
   $('#editBtn').addEventListener('click', () => {
     const s = state.sent || {};
-    Object.assign(state, { name: s.name || '', phone: s.phone || '', attend: s.attend || 0, guests: s.guests || 2, note: s.note || '', sent: null, errors: {}, sendError: '' });
+    Object.assign(state, { name: s.name || '', phone: s.phone || '', attend: s.attend || 0, guests: s.guests || 4, note: s.note || '', sent: null, errors: {}, sendError: '' });
     fName.value = state.name; fPhone.value = state.phone; fNote.value = state.note;
     renderRsvp();
   });

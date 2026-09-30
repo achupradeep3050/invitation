@@ -13,5 +13,9 @@ window.WEDDING_CONFIG = {
   PHOTO_STYLE: 'Original',
 
   // The opening door animation.
-  SHOW_INTRO: true
+  SHOW_INTRO: true,
+
+  // Moving versions of the photos (Seedance clips → assets/motion/*.mp4). Photo file name → video.
+  // A photo without an entry stays a still image; a video that fails to load leaves the photo showing.
+  MOTION: {}
 };

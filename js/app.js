@@ -336,6 +336,33 @@
     };
   }
 
+  /* ---------- Motion: looping videos over the photos (only where C.MOTION has one) ---------- */
+  (function motion() {
+    const map = C.MOTION || {};
+    if (!Object.keys(map).length) return;
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = navigator.connection && navigator.connection.saveData;
+    if (reduce || saveData) return;                       // stills for people who asked for less motion / data
+    const vids = [];
+    $$('.photo img').forEach(img => {
+      const name = (img.getAttribute('src') || '').split('/').pop();
+      const src = map[name]; if (!src) return;
+      const v = document.createElement('video');
+      Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'none', poster: img.getAttribute('src') });
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+      v.className = img.className;
+      v.src = src;
+      v.addEventListener('error', () => v.remove());       // the photo underneath stays
+      img.after(v); vids.push(v);
+    });
+    const vio = new IntersectionObserver(es => es.forEach(en => {
+      const v = en.target;
+      if (en.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+      else v.pause();
+    }), { threshold: 0.05 });
+    vids.forEach(v => vio.observe(v));
+  })();
+
   /* ---------- Scroll reveal ---------- */
   let revealReady = false;
   const io = new IntersectionObserver(es => es.forEach(en => {

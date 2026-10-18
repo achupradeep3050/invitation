@@ -55,6 +55,7 @@
     renderCredits();
     renderRsvp();
     renderAuto();
+    if (typeof renderMusic === 'function' && musicBtn) renderMusic();
   }
   $('#langToggle').addEventListener('click', () => {
     state.lang = state.lang === 'ml' ? 'en' : 'ml';
@@ -273,7 +274,7 @@
   /* ---------- Slow auto-scroll after the invitation opens ---------- */
   const autoBtn = $('#autoBtn'), autoLabel = $('#autoLabel'), rsvpEl = $('#rsvp');
   const auto = { on: false, done: false, raf: 0, last: 0, y: 0, dwellUntil: 0, dwelt: new Set() };
-  const SPEED = () => Math.max(34, Math.min(60, innerHeight * 0.055)); // px per second
+  const SPEED = () => Math.max(72, Math.min(130, innerHeight * 0.12)); // px per second
   const dwellAt = $$('main > section:not(.hero), .story-item, .chapters-photo');
   function renderAuto() {
     if (autoBtn.hidden) return;
@@ -292,7 +293,7 @@
     for (const el of dwellAt) {
       if (auto.dwelt.has(el)) continue;
       const top = el.getBoundingClientRect().top;
-      if (top <= innerHeight * 0.16 && top > -innerHeight * 0.5) { auto.dwelt.add(el); auto.dwellUntil = now + 1400; break; }
+      if (top <= innerHeight * 0.16 && top > -innerHeight * 0.5) { auto.dwelt.add(el); auto.dwellUntil = now + 800; break; }
     }
     // the guest moved the page some other way (scrollbar, find-in-page…) → hand it over
     if (Math.abs(scrollY - auto.set) > 4) { pauseAuto(); return; }
@@ -316,9 +317,94 @@
   });
   // any hand on the page takes over from the auto-scroll
   ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(type => addEventListener(type, e => {
-    if (e.target && e.target.closest && e.target.closest('#autoBtn')) return;
+    if (e.target && e.target.closest && e.target.closest('#autoBtn, #musicBtn, #langToggle')) return;
     pauseAuto();
   }, { passive: true }));
+
+  /* ---------- Music: a light piano loop + a soft chime as the doors open ----------
+     Web Audio (sample-accurate loop, fades) — browsers allow sound only after a tap, so it starts on "Open". */
+  const MUSIC_URL = 'assets/v2/audio/piano-loop-v1.mp3', CHIME_URL = 'assets/v2/audio/door-chime-v1.mp3';
+  const KEY_MUSIC = 'wedding-music', VOL = 0.42;
+  const musicBtn = $('#musicBtn');
+  const music = { ctx: null, gain: null, buf: null, chime: null, src: null, on: false, failed: false, loading: null, bytes: null };
+  const wantMusic = () => store.get(KEY_MUSIC) !== 'off';
+  function prefetchMusic() {
+    if (music.bytes) return;
+    const get = u => fetch(u).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
+    music.bytes = [get(MUSIC_URL), get(CHIME_URL)];
+  }
+  function decode(ctx, p) {
+    return p.then(ab => ab ? new Promise(res => { try { ctx.decodeAudioData(ab, res, () => res(null)); } catch (e) { res(null); } }) : null);
+  }
+  function ensureCtx() {
+    if (music.ctx) return music.ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {} // iPhone: play even on silent
+    const ctx = new AC();
+    music.ctx = ctx; music.gain = ctx.createGain(); music.gain.gain.value = 0; music.gain.connect(ctx.destination);
+    prefetchMusic();
+    music.loading = Promise.all([decode(ctx, music.bytes[0]), decode(ctx, music.bytes[1])]).then(([m, c]) => { music.buf = m; music.chime = c; });
+    return ctx;
+  }
+  // MP3 adds a few ms of encoder silence at both ends — loop between the real first and last samples
+  function loopPoints(b) {
+    const d = b.getChannelData(0), th = 2e-4;
+    let a = 0; while (a < 4096 && Math.abs(d[a]) < th) a++;
+    let z = d.length - 1; while (z > d.length - 8192 && Math.abs(d[z]) < th) z--;
+    return [a / b.sampleRate, (z + 1) / b.sampleRate];
+  }
+  function ramp(to, secs) {
+    const g = music.gain.gain, now = music.ctx.currentTime;
+    g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.linearRampToValueAtTime(to, now + secs);
+  }
+  function startMusic() {                      // call from a tap
+    const ctx = ensureCtx(); if (!ctx) { music.failed = true; renderMusic(); return; }
+    if (ctx.state !== 'running') ctx.resume();
+    music.on = true; renderMusic();
+    music.loading.then(() => {
+      if (!music.buf) { music.on = false; music.failed = true; renderMusic(); return; }
+      if (!music.on) return;
+      if (!music.src) {
+        const s = ctx.createBufferSource(), [a, z] = loopPoints(music.buf);
+        s.buffer = music.buf; s.loop = true; s.loopStart = a; s.loopEnd = z;
+        s.connect(music.gain); s.start(0, a); music.src = s;
+      }
+      ramp(VOL, 2.5); renderMusic();
+    });
+  }
+  function stopMusic() {
+    music.on = false; renderMusic();
+    if (!music.ctx) return;
+    ramp(0, 0.6);
+    setTimeout(() => { if (!music.on && music.ctx.state === 'running') music.ctx.suspend(); }, 700);
+  }
+  function playChime() {
+    const ctx = ensureCtx(); if (!ctx) return;
+    music.loading.then(() => {
+      if (!music.chime) return;
+      const s = ctx.createBufferSource(), g = ctx.createGain();
+      s.buffer = music.chime; g.gain.value = 0.5; s.connect(g); g.connect(ctx.destination); s.start();
+    });
+  }
+  function renderMusic() {
+    const playing = music.on && !!music.src;
+    musicBtn.dataset.state = music.failed ? 'failed' : playing ? 'playing' : music.on ? 'loading' : 'off';
+    musicBtn.setAttribute('aria-pressed', String(music.on));
+    musicBtn.setAttribute('aria-label', L().music);
+    musicBtn.title = L().music;
+    if (music.ctx) musicBtn.dataset.ctx = music.ctx.state;
+    if (music.buf) musicBtn.dataset.dur = music.buf.duration.toFixed(1);
+  }
+  musicBtn.addEventListener('click', () => {
+    if (music.on) { stopMusic(); store.set(KEY_MUSIC, 'off'); }
+    else { music.failed = false; startMusic(); store.set(KEY_MUSIC, 'on'); }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!music.ctx || !music.on) return;
+    if (document.hidden) music.ctx.suspend(); else music.ctx.resume();
+  });
+  setTimeout(prefetchMusic, 1500);
 
   /* ---------- Gate ---------- */
   const gate = $('#gate');
@@ -331,6 +417,7 @@
     if (opened) return;
     opened = true;
     gate.classList.add('opening');
+    if (wantMusic()) { startMusic(); playChime(); }
     document.body.style.overflow = '';
     play(heroFilm);
     entered();

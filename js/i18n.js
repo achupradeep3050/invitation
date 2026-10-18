@@ -1,6 +1,7 @@
 /* Every visible string, English and Malayalam (from the design, verbatim; RSVP messages and the 2026-10-18 redesign strings added). */
 window.WEDDING_T = {
   en: {
+    music: 'Background music',
     lettersTitle: 'The Invitation Letters', lettersNote: 'One from each family — save the one you received, or both.', letterGroom: 'From the groom’s family', letterBride: 'From the bride’s family', download: 'DOWNLOAD', view: 'VIEW',
     storyTitle: 'Our Story', story1: 'It began with laughter', story2: 'Two hearts, one rhythm', story3: 'Side by side, every day',
     eventsTitle: 'The Celebrations', scroll: 'SCROLL', autoPause: 'PAUSE', autoPlay: 'AUTO-SCROLL', hideMap: 'HIDE MAP',
@@ -20,6 +21,7 @@ window.WEDDING_T = {
     cr: [['Married at', '3 December 2026 · Guruvayur'], ['The wedding function', '5 December 2026 · Chavara'], ['The reception', '6 December 2026 · Varkala'], ['Presented by', 'Our families, with love']]
   },
   ml: {
+    music: 'പശ്ചാത്തല സംഗീതം',
     lettersTitle: 'ക്ഷണക്കത്തുകൾ', lettersNote: 'ഇരു കുടുംബങ്ങളുടെയും കത്തുകൾ — നിങ്ങൾക്ക് ലഭിച്ചത്, അല്ലെങ്കിൽ രണ്ടും, ഡൗൺലോഡ് ചെയ്യാം.', letterGroom: 'വരന്റെ കുടുംബത്തിൽ നിന്ന്', letterBride: 'വധുവിന്റെ കുടുംബത്തിൽ നിന്ന്', download: 'ഡൗൺലോഡ്', view: 'കാണുക',
     storyTitle: 'ഞങ്ങളുടെ കഥ', story1: 'ചിരിയിൽ തുടങ്ങിയ കഥ', story2: 'രണ്ട് ഹൃദയങ്ങൾ, ഒരേ താളം', story3: 'എന്നും ഒരുമിച്ച്',
     eventsTitle: 'ആഘോഷങ്ങൾ', scroll: 'താഴേക്ക്', autoPause: 'നിർത്തുക', autoPlay: 'തനിയെ നീങ്ങട്ടെ', hideMap: 'മാപ്പ് മറയ്ക്കുക',

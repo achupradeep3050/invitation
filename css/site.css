@@ -68,7 +68,7 @@ section, footer { position: relative; overflow: hidden; }
 .progress i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--ochre), var(--gold-hi), var(--gold)); }
 
 .lang {
-  position: fixed; z-index: 92; top: max(12px, env(safe-area-inset-top)); left: var(--gutter);
+  position: fixed; z-index: 101; top: max(12px, env(safe-area-inset-top)); left: var(--gutter);
   display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid rgba(216,176,100,.7);
   background: rgba(22,10,7,.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
 }
@@ -407,3 +407,20 @@ html[lang="ml"] .letter-side { font-size: 15px; }
 .letters .btn-line:hover { background: rgba(216,176,100,.1); border-color: var(--gold); }
 .letter.mine .letter-thumb { box-shadow: 0 0 0 2px var(--gold), 0 0 0 8px rgba(216,176,100,.18), 0 30px 60px -26px rgba(0,0,0,.85); }
 @media (min-width: 760px) { .letter-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+
+/* ---------- Music switch ---------- */
+.music {
+  position: fixed; z-index: 101; top: max(12px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+  width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid rgba(216,176,100,.7); background: rgba(22,10,7,.82); color: var(--gold-hi);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: border-color .25s, background-color .25s;
+}
+.music:hover { border-color: var(--gold); }
+.music svg { width: 22px; height: 22px; fill: currentColor; }
+.music .i-on { display: none; }
+.music[data-state="playing"] .i-on, .music[data-state="loading"] .i-on { display: block; }
+.music[data-state="playing"] .i-off, .music[data-state="loading"] .i-off { display: none; }
+.music[data-state="loading"] { opacity: .7; }
+.music[data-state="playing"] .wave { animation: wave 1.6s ease-in-out infinite; }
+.music[data-state="playing"] .w2 { animation-delay: .3s; }
+@keyframes wave { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }

@@ -7,11 +7,10 @@
   const T = window.WEDDING_T;
 
   const EVENTS = [
-    { day: '03', time: '9:00 – 10:00 AM', venue: 'Guruvayur', address: 'Guruvayur, Thrissur, Kerala', q: 'Guruvayur Sri Krishna Temple', dir: 'https://www.google.com/maps/search/?api=1&query=Guruvayur+Sri+Krishna+Temple', dates: '20261203T033000Z/20261203T043000Z', loc: 'Guruvayur, Kerala' },
     { day: '05', time: '11:00 AM – 12:00 PM', venue: 'Lavilla Lake Resort & Restaurant', address: 'madathil, junction, Chavara, Thekkumbhagam, Keralam 691319', q: 'Lavilla Lake Resort and Restaurant, Chavara, Kerala 691319', dir: 'https://maps.app.goo.gl/TDjA4dVLYH3GLAB19', dates: '20261205T053000Z/20261205T063000Z', loc: 'Lavilla Lake Resort and Restaurant, madathil, junction, Chavara, Thekkumbhagam, Keralam 691319' },
     { day: '06', time: '4:00 – 8:00 PM', venue: 'Meva Convention Centre', address: 'Near, Palachira - Karathala -Thettikulam Rd, Junction, Varkala, Keralam 695143', q: 'Meva Convention Centre, Varkala, Kerala 695143', dir: 'https://maps.app.goo.gl/mXn6vLCf3r7qYpwQ9', dates: '20261206T103000Z/20261206T143000Z', loc: 'Meva Convention Centre, Near, Palachira - Karathala -Thettikulam Rd, Junction, Varkala, Keralam 695143' }
   ];
-  const ROMAN = ['I', 'II', 'III'];
+  const ROMAN = ['I', 'II'];
   const WEDDING_AT = new Date('2026-12-05T11:00:00+05:30').getTime();
   const CANT_COME = 3;
   const KEY_LANG = 'wedding-lang', KEY_RSVP = 'wedding-rsvp-v2', KEY_ID = 'wedding-rsvp-id';
@@ -33,7 +32,7 @@
   if (urlLang === 'ml' || urlLang === 'en') store.set(KEY_LANG, urlLang);
   const state = {
     lang: store.get(KEY_LANG) === 'ml' ? 'ml' : 'en',
-    maps: [false, false, false],
+    maps: [false, false],
     name: '', phone: '', guests: 4, attend: 0, note: '',
     errors: {}, sendError: '', sending: false, sent: null
   };
@@ -235,23 +234,24 @@
   /* ---------- Scroll scenes: hero arch, mural strips, parallax, progress ---------- */
   const root = document.documentElement;
   const hero = $('.hero'), heroStage = $('.hero-stage');
-  const scrubs = $$('[data-scrub]');
+  const scrubs = $$('[data-scrub]').map(el => ({ el, ins: $$(':scope > .mural-side, :scope > .feather', el), last: '' }));
   const bar = $('#progressBar');
-  let vh = innerHeight, queued = false;
+  let vh = innerHeight, queued = false, lastH = '';
   function scene() {
     queued = false;
     vh = innerHeight;
     const hr = hero.getBoundingClientRect();
     const travel = Math.max(1, hr.height - heroStage.offsetHeight);
     const h = clamp01(-hr.top / (travel * 0.82));
-    hero.style.setProperty('--h', h.toFixed(4));
-    hero.style.setProperty('--h2', clamp01((h - 0.62) / 0.38).toFixed(4));
-    for (const el of scrubs) {
-      const r = el.getBoundingClientRect();
+    const hv = h.toFixed(3);
+    if (hv !== lastH) { lastH = hv; heroStage.style.setProperty('--h', hv); heroStage.style.setProperty('--h2', clamp01((h - 0.62) / 0.38).toFixed(3)); }
+    for (const s of scrubs) {
+      const r = s.el.getBoundingClientRect();
       if (r.bottom < -vh || r.top > vh * 2) continue;
-      const p = clamp01((vh - r.top) / (vh + r.height));
-      el.style.setProperty('--p', p.toFixed(4));
-      el.style.setProperty('--in', clamp01((vh - r.top) / (vh * 0.55)).toFixed(4));
+      const v = clamp01((vh - r.top) / (vh * 0.55)).toFixed(3);
+      if (v === s.last) continue;
+      s.last = v;
+      for (const t of s.ins) t.style.setProperty('--in', v);
     }
     const max = Math.max(1, root.scrollHeight - vh);
     bar.style.transform = `scaleX(${clamp01(scrollY / max).toFixed(4)})`;
@@ -275,7 +275,7 @@
   const autoBtn = $('#autoBtn'), autoLabel = $('#autoLabel'), rsvpEl = $('#rsvp');
   const auto = { on: false, done: false, raf: 0, last: 0, y: 0, dwellUntil: 0, dwelt: new Set() };
   const SPEED = () => Math.max(72, Math.min(130, innerHeight * 0.12)); // px per second
-  const dwellAt = $$('main > section:not(.hero), .story-item, .chapters-photo');
+  const dwellAt = $$('main > section:not(.hero), .event, .letter');
   function renderAuto() {
     if (autoBtn.hidden) return;
     const t = L();
@@ -342,6 +342,7 @@
     if (!AC) return null;
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {} // iPhone: play even on silent
     const ctx = new AC();
+    ctx.onstatechange = () => renderMusic();
     music.ctx = ctx; music.gain = ctx.createGain(); music.gain.gain.value = 0; music.gain.connect(ctx.destination);
     prefetchMusic();
     music.loading = Promise.all([decode(ctx, music.bytes[0]), decode(ctx, music.bytes[1])]).then(([m, c]) => { music.buf = m; music.chime = c; });
@@ -388,7 +389,7 @@
     });
   }
   function renderMusic() {
-    const playing = music.on && !!music.src;
+    const playing = music.on && !!music.src && (!music.ctx || music.ctx.state === 'running');
     musicBtn.dataset.state = music.failed ? 'failed' : playing ? 'playing' : music.on ? 'loading' : 'off';
     musicBtn.setAttribute('aria-pressed', String(music.on));
     musicBtn.setAttribute('aria-label', L().music);
@@ -400,6 +401,9 @@
     if (music.on) { stopMusic(); store.set(KEY_MUSIC, 'off'); }
     else { music.failed = false; startMusic(); store.set(KEY_MUSIC, 'on'); }
   });
+  ['touchend', 'pointerup', 'click', 'keydown'].forEach(type => addEventListener(type, () => {
+    if (music.on && music.ctx && music.ctx.state !== 'running' && !document.hidden) music.ctx.resume().then(renderMusic, () => {});
+  }, { passive: true }));
   document.addEventListener('visibilitychange', () => {
     if (!music.ctx || !music.on) return;
     if (document.hidden) music.ctx.suspend(); else music.ctx.resume();

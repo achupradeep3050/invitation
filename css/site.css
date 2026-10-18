@@ -70,7 +70,7 @@ section, footer { position: relative; overflow: hidden; }
 .lang {
   position: fixed; z-index: 101; top: max(12px, env(safe-area-inset-top)); left: var(--gutter);
   display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid rgba(216,176,100,.7);
-  background: rgba(22,10,7,.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  background: rgba(22,10,7,.92);
 }
 .lang span { min-width: 42px; min-height: 38px; display: grid; place-items: center; border-radius: 999px; color: var(--gold); transition: background-color .25s, color .25s; }
 .lang-en { font: 600 11px/1 Manrope, sans-serif; letter-spacing: .12em; }
@@ -80,8 +80,7 @@ html[lang="en"] .lang-en, html[lang="ml"] .lang-ml { background: var(--gold); co
 .auto {
   position: fixed; z-index: 92; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom));
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 12px; border-radius: 999px;
-  border: 1px solid rgba(216,176,100,.7); background: rgba(22,10,7,.86); color: var(--gold-hi);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid rgba(216,176,100,.7); background: rgba(22,10,7,.92); color: var(--gold-hi);
   font: 600 10px/1 var(--f-body); letter-spacing: .18em; transition: opacity .4s, transform .4s var(--ease-out);
 }
 html[lang="ml"] .auto { letter-spacing: .02em; font-size: 12px; }
@@ -100,7 +99,7 @@ html[lang="ml"] .auto { letter-spacing: .02em; font-size: 12px; }
 .door-mural {
   position: absolute; inset: 14px; border: 1px solid rgba(216,176,100,.45); border-radius: 8px;
   background: url(../assets/v2/mural-vine.svg) center top / 64px 128px repeat;
-  opacity: .34; animation: drift 60s linear infinite;
+  opacity: .34;
 }
 .door-l .door-mural { right: 8px; }
 .door-r .door-mural { left: 8px; }
@@ -136,7 +135,7 @@ html[lang="ml"] .btn-open { letter-spacing: .02em; font-size: 15px; }
 /* ---------- 01 Hero ---------- */
 .hero { height: 215vh; height: 215svh; background: var(--night); overflow: visible; }
 @supports (overflow: clip) { .hero { overflow: clip; } }
-.hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; contain: paint; }
 .hero-media {
   position: absolute; inset: 0; overflow: hidden; background: var(--night-2);
   clip-path: inset(calc(var(--h) * 9%) calc(var(--h) * 9%) calc(var(--h) * 27%) calc(var(--h) * 9%) round calc(var(--h) * 41vw) calc(var(--h) * 41vw) calc(var(--h) * 16px) calc(var(--h) * 16px) / calc(var(--h) * 30vw) calc(var(--h) * 30vw) calc(var(--h) * 16px) calc(var(--h) * 16px));
@@ -155,7 +154,7 @@ html[lang="ml"] .btn-open { letter-spacing: .02em; font-size: 15px; }
 .hero-mural {
   position: absolute; top: 0; bottom: 0; width: var(--tw); z-index: 1;
   background: url(../assets/v2/mural-vine.svg) center top / var(--tw) calc(var(--tw) * 2) repeat-y;
-  animation: drift 48s linear infinite; opacity: calc(var(--h) * .95);
+  opacity: calc(var(--h) * .95); will-change: transform, opacity;
 }
 .hero-mural-l { left: 0; border-right: 1px solid rgba(216,176,100,.5); transform: translateX(calc((1 - var(--h)) * -110%)); }
 .hero-mural-r { right: 0; border-left: 1px solid rgba(216,176,100,.5); transform: translateX(calc((1 - var(--h)) * 110%)) scaleX(-1); }
@@ -200,11 +199,10 @@ html[lang="ml"] .eyebrow { font-size: 15px; }
 .mural-side {
   position: absolute; top: 0; bottom: 0; width: var(--tw); z-index: 1; pointer-events: none;
   background: url(../assets/v2/mural-vine.svg) center top / var(--tw) calc(var(--tw) * 2) repeat-y, linear-gradient(180deg, #ecdcb7, #e4d0a6);
-  animation: drift 52s linear infinite;
-  transition: transform .2s linear;
+  will-change: transform;
 }
 .mural-side.l { left: 0; border-right: 1px solid rgba(160,113,42,.45); box-shadow: inset -6px 0 0 -5px rgba(160,113,42,.35); transform: translateX(calc((1 - var(--in)) * -105%)); }
-.mural-side.r { right: 0; border-left: 1px solid rgba(160,113,42,.45); box-shadow: inset 6px 0 0 -5px rgba(160,113,42,.35); transform: translateX(calc((1 - var(--in)) * 105%)) scaleX(-1); animation-direction: reverse; }
+.mural-side.r { right: 0; border-left: 1px solid rgba(160,113,42,.45); box-shadow: inset 6px 0 0 -5px rgba(160,113,42,.35); transform: translateX(calc((1 - var(--in)) * 105%)) scaleX(-1); }
 .paper { padding-inline: calc(var(--tw) + 14px); }
 
 /* ---------- 02 Verse ---------- */
@@ -241,7 +239,7 @@ html[lang="ml"] .until { font-style: normal; font-size: 16px; }
 }
 .arch-photo.tall { aspect-ratio: 3 / 4.6; }
 .arch-photo picture, .arch-photo img { display: block; width: 100%; height: 100%; }
-.arch-photo img { height: 118%; max-width: none; object-fit: cover; object-position: 50% 35%; transform: translateY(calc((var(--p) - .5) * -14%)) scale(1.02); transition: transform .2s linear; }
+.arch-photo img { height: 118%; max-width: none; object-fit: cover; object-position: 50% 35%; transform: scale(1.02); }
 .js .arch-photo[data-reveal] { transform: translateY(44px) scale(.94); }
 .js .arch-photo[data-reveal].in { transform: none; }
 
@@ -257,7 +255,7 @@ html[lang="ml"] .story-item figcaption { font-style: normal; font-size: clamp(18
 .film { padding: clamp(80px, 14vw, 130px) var(--gutter); }
 .film-frame { position: relative; max-width: 520px; margin: 0 auto; padding: 10px; border: 1px solid rgba(216,176,100,.5); border-radius: 22px; }
 .film-frame video { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 14px; background: var(--night-2); }
-.feather { position: absolute; z-index: 1; width: clamp(54px, 14vw, 120px); height: auto; aspect-ratio: 1 / 2; color: var(--gold); opacity: .9; top: 30%; transition: transform .2s linear; }
+.feather { position: absolute; z-index: 1; width: clamp(54px, 14vw, 120px); height: auto; aspect-ratio: 1 / 2; color: var(--gold); opacity: .9; top: 30%; will-change: transform; }
 .feather.f-l { left: -6px; transform: translateX(calc((1 - var(--in)) * -120%)) rotate(-18deg); }
 .feather.f-r { right: -6px; transform: translateX(calc((1 - var(--in)) * 120%)) rotate(18deg) scaleX(-1); }
 
@@ -412,8 +410,7 @@ html[lang="ml"] .letter-side { font-size: 15px; }
 .music {
   position: fixed; z-index: 101; top: max(12px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
   width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
-  border: 1px solid rgba(216,176,100,.7); background: rgba(22,10,7,.82); color: var(--gold-hi);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: border-color .25s, background-color .25s;
+  border: 1px solid rgba(216,176,100,.7); background: rgba(22,10,7,.92); color: var(--gold-hi); transition: border-color .25s, background-color .25s;
 }
 .music:hover { border-color: var(--gold); }
 .music svg { width: 22px; height: 22px; fill: currentColor; }

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 240" width="120" height="240">
+  <!-- Kerala-mural vine tile: repeats vertically (the stem meets itself at top and bottom). -->
+  <g fill="none" stroke="#d8b064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 0 C20 40 100 80 60 120 C20 160 100 200 60 240"/>
+  </g>
+  <!-- leaves -->
+  <g stroke="#d8b064" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M47 34 C30 20 12 26 6 44 C24 50 40 46 47 34Z" fill="#3c5a33"/>
+    <path d="M73 86 C90 72 108 78 114 96 C96 102 80 98 73 86Z" fill="#3c5a33"/>
+    <path d="M47 154 C30 140 12 146 6 164 C24 170 40 166 47 154Z" fill="#3c5a33"/>
+    <path d="M73 206 C90 192 108 198 114 216 C96 222 80 218 73 206Z" fill="#3c5a33"/>
+  </g>
+  <g fill="none" stroke="#f1d79a" stroke-width=".9" opacity=".8">
+    <path d="M44 36 C32 32 20 36 12 44"/><path d="M76 88 C88 84 100 88 108 96"/>
+    <path d="M44 156 C32 152 20 156 12 164"/><path d="M76 208 C88 204 100 208 108 216"/>
+  </g>
+  <!-- peacock-feather eyes on the curve -->
+  <g stroke="#d8b064" stroke-width="1.2">
+    <ellipse cx="78" cy="38" rx="9" ry="13" fill="#c98a2b" transform="rotate(30 78 38)"/>
+    <ellipse cx="78" cy="38" rx="5.5" ry="8" fill="#3c5a33" transform="rotate(30 78 38)"/>
+    <circle cx="78" cy="38" r="3" fill="#1d2b55" stroke="none"/>
+    <ellipse cx="42" cy="158" rx="9" ry="13" fill="#c98a2b" transform="rotate(-30 42 158)"/>
+    <ellipse cx="42" cy="158" rx="5.5" ry="8" fill="#3c5a33" transform="rotate(-30 42 158)"/>
+    <circle cx="42" cy="158" r="3" fill="#1d2b55" stroke="none"/>
+  </g>
+  <!-- lotus buds -->
+  <g stroke="#d8b064" stroke-width="1.2" stroke-linejoin="round">
+    <path d="M60 104 C50 112 50 124 60 132 C70 124 70 112 60 104Z" fill="#a8321f"/>
+    <path d="M60 110 C55 116 55 122 60 128 C65 122 65 116 60 110Z" fill="#e0794f" stroke="none"/>
+    <path d="M44 120 C50 128 56 130 60 132 C64 130 70 128 76 120" fill="none"/>
+    <circle cx="26" cy="96" r="3" fill="#d8b064" stroke="none"/>
+    <circle cx="94" cy="216" r="2.4" fill="#d8b064" stroke="none"/>
+    <circle cx="94" cy="148" r="3" fill="#d8b064" stroke="none"/>
+    <circle cx="26" cy="216" r="2.4" fill="#d8b064" stroke="none"/>
+  </g>
+</svg>

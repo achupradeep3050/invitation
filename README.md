@@ -1,16 +1,17 @@
 # Achu & Lekshmi — wedding invitation
 
 Live at **https://achupradeep.online/invitation/** (GitHub Pages, repo `achupradeep3050/invitation`).
-A static site with no build step, recreated from the Claude Design prototype *Wedding Invitation v2*. It's bilingual (English / മലയാളം).
+A static site with no build step, bilingual (English / മലയാളം). **Redesigned 2026-10-18**: Kerala-mural heritage in an aged-gold tone, a tall portrait hero film that settles into a temple arch as you scroll, mural strips that slide in from the sides, a slow auto-scroll after the invitation opens (any touch, wheel or key hands control back; the pill bottom-right pauses/resumes; it stops at the RSVP), and two HyperFrames films. The previous live design is kept on the branch `backup/live-2026-10-01` and the tag `backup-2026-10-18-before-redesign`.
 RSVPs go to a **Google Sheet** through a small Apps Script.
 
 ```
 index.html          the page
-css/style.css       all styling
-js/config.js        ← RSVP_URL, names, photo style, intro on/off
+css/site.css        all styling
+js/config.js        ← RSVP_URL, names, intro on/off
 js/i18n.js          every English and Malayalam string
-js/app.js           behaviour (intro doors, countdown, lamp, cards, carousel, RSVP)
-assets/             photos (hero.jpg, m1–m6.jpg)
+js/site.js          behaviour (gate doors, scroll scenes, auto-scroll, films, event chapters, RSVP)
+assets/v2/          the five photos (720/1200 px, JPEG + WebP), the two films + posters, mural-vine.svg
+assets/portrait-garden.jpg  old portrait — not on the page any more, kept because ~/wedding-sender attaches it
 apps-script/Code.gs the RSVP receiver (lives in Google, not served)
 ```
 
@@ -39,10 +40,12 @@ same `/exec` URL. A *New deployment* makes a new URL.
 - Guruvayur (3 Dec) has no RSVP option, which is how the design has it.
 
 ## Change things
-- **Names, photo style, intro:** `js/config.js`.
+- **Names, intro:** `js/config.js`.
 - **Wording:** `js/i18n.js` (keep the `en` and `ml` keys in step).
 - **Times, venues, map links:** `EVENTS` at the top of `js/app.js`.
-- **Photos:** `assets/portrait-garden.jpg` is the portrait, which is also the WhatsApp/link preview and the sender app's photo. `assets/moment-*.jpg` fill the 8-tile carousel, each shown twice on opposite sides. They're shown as they are (`PHOTO_STYLE: 'Original'`). ⚠️ **To change a photo, give it a NEW file name and update `index.html`.** Also bump `?v=` on the CSS/JS links whenever you change them. Browsers and GitHub's CDN keep the old copies under an old name, so reusing a name looks like nothing changed.
+- **Photos:** `assets/v2/kerala-home-*` (link preview + inside the hero film), `bamboo-laugh`, `monochrome`, `gym-mirror` (Our Story), `kasavu-white` (The Celebrations). Shown as they are — motion only, no colour filter. ⚠️ **To change a photo, give it a NEW file name and update `index.html`.** Also bump `?v=` on the CSS/JS links whenever you change them. Browsers and GitHub's CDN keep the old copies under an old name, so reusing a name looks like nothing changed.
+- **Invitation letters:** `assets/v2/letters/achu-lekshmi-letter-grooms-family.jpg` and `…-brides-family.jpg` are the families' letters exactly as received (download + view buttons; previews are `letter-*-thumb.*`). A link with `?side=bride` or `?side=groom` puts that family's letter first and rings it in gold — use it in the WhatsApp invitations, e.g. `https://achupradeep.online/invitation/?side=bride&lang=ml`.
+- **Films:** `assets/v2/hero-film.mp4` (12 s portrait loop) and `moments-film.mp4` (15 s, all five photos) are rendered with HyperFrames from `~/wedding-tools/hyperframes/wedding-hero` and `wedding-moments` (not in this repo). Re-render: `HYPERFRAMES_NO_TELEMETRY=1 PATH=~/wedding-tools/node_modules/@ffprobe-installer/darwin-arm64:$PATH npx -y hyperframes@0.8.172 render --fps 30 --quality looks --workers 2 --output renders/master.mp4`, then encode with ffmpeg (H.264, `-crf 24 -movflags +faststart`, 720 px wide for the hero, 864 px for moments) under a NEW file name.
 
 ## Run locally
 ```

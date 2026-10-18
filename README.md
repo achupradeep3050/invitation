@@ -49,7 +49,7 @@ same `/exec` URL. A *New deployment* makes a new URL.
 
 ## Run locally
 ```
-python3 -m http.server 8765    # then open http://127.0.0.1:8765/
+python3 -m http.server 8780 --bind 127.0.0.1    # then open http://127.0.0.1:8780/  (NOT 8765 — the Hermes gadget hub listens there)
 ```
 
 ## Deploy

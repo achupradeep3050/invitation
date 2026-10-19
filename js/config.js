@@ -5,8 +5,7 @@ window.WEDDING_CONFIG = {
   RSVP_URL: 'https://script.google.com/macros/s/AKfycbyx9h0FfvWNlOXZ9eAFhTxqcIUcq6vBkutDDhai2EIf94eYBuCoEkP1GJxVnV711uMQ/exec',
 
   NAMES: {
-    en: { groom: 'Achu', bride: 'Lekshmi' },
-    ml: { groom: 'അച്ചു', bride: 'ലക്ഷ്മി' }
+    en: { groom: 'Achu', bride: 'Lekshmi' }
   },
 
   // 'Watercolor' | 'Oil painting' | 'Film grade' | 'Original'

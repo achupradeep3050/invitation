@@ -13,7 +13,7 @@
   const ROMAN = ['I', 'II'];
   const WEDDING_AT = new Date('2026-12-05T11:00:00+05:30').getTime();
   const CANT_COME = 3;
-  const KEY_LANG = 'wedding-lang', KEY_RSVP = 'wedding-rsvp-v2', KEY_ID = 'wedding-rsvp-id';
+  const KEY_RSVP = 'wedding-rsvp-v2', KEY_ID = 'wedding-rsvp-id';
   const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -27,11 +27,9 @@
   const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
     : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
 
-  // ?lang=ml / ?lang=en in the link (the WhatsApp invitations use it) wins over the remembered choice.
-  const urlLang = new URLSearchParams(location.search).get('lang');
-  if (urlLang === 'ml' || urlLang === 'en') store.set(KEY_LANG, urlLang);
+  // English only since 2026-10-19 (browser auto-translation broke the Malayalam toggle); ?lang= links are ignored.
   const state = {
-    lang: store.get(KEY_LANG) === 'ml' ? 'ml' : 'en',
+    lang: 'en',
     maps: [false, false],
     name: '', phone: '', guests: 4, attend: 0, note: '',
     errors: {}, sendError: '', sending: false, sent: null
@@ -43,7 +41,7 @@
   const L = () => T[state.lang];
   const names = () => C.NAMES[state.lang];
 
-  /* ---------- Language ---------- */
+  /* ---------- Text ---------- */
   function applyLang() {
     const t = L(), n = names();
     document.documentElement.lang = state.lang;
@@ -56,11 +54,6 @@
     renderAuto();
     if (typeof renderMusic === 'function' && musicBtn) renderMusic();
   }
-  $('#langToggle').addEventListener('click', () => {
-    state.lang = state.lang === 'ml' ? 'en' : 'ml';
-    store.set(KEY_LANG, state.lang);
-    applyLang();
-  });
 
   /* ---------- Countdown ---------- */
   const cd = $('#countdown');
@@ -274,7 +267,7 @@
   /* ---------- Slow auto-scroll after the invitation opens ---------- */
   const autoBtn = $('#autoBtn'), autoLabel = $('#autoLabel'), rsvpEl = $('#rsvp');
   const auto = { on: false, done: false, raf: 0, last: 0, y: 0, dwellUntil: 0, dwelt: new Set() };
-  const SPEED = () => Math.max(72, Math.min(130, innerHeight * 0.12)); // px per second
+  const SPEED = () => Math.max(100, Math.min(175, innerHeight * 0.16)); // px per second
   const dwellAt = $$('main > section:not(.hero), .event, .letter');
   function renderAuto() {
     if (autoBtn.hidden) return;
@@ -317,14 +310,14 @@
   });
   // any hand on the page takes over from the auto-scroll
   ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(type => addEventListener(type, e => {
-    if (e.target && e.target.closest && e.target.closest('#autoBtn, #musicBtn, #langToggle')) return;
+    if (e.target && e.target.closest && e.target.closest('#autoBtn, #musicBtn')) return;
     pauseAuto();
   }, { passive: true }));
 
-  /* ---------- Music: a light piano loop + a soft chime as the doors open ----------
+  /* ---------- Music: the couple's trance track + a soft chime as the doors open ----------
      Web Audio (sample-accurate loop, fades) — browsers allow sound only after a tap, so it starts on "Open". */
-  const MUSIC_URL = 'assets/v2/audio/piano-loop-v1.mp3', CHIME_URL = 'assets/v2/audio/door-chime-v1.mp3';
-  const KEY_MUSIC = 'wedding-music', VOL = 0.42;
+  const MUSIC_URL = 'assets/v2/audio/marriage-trance-v1.mp3', CHIME_URL = 'assets/v2/audio/door-chime-v1.mp3';
+  const KEY_MUSIC = 'wedding-music', VOL = 0.24; // the track is ~5 dB louder than the old piano loop
   const musicBtn = $('#musicBtn');
   const music = { ctx: null, gain: null, buf: null, chime: null, src: null, on: false, failed: false, loading: null, bytes: null };
   const wantMusic = () => store.get(KEY_MUSIC) !== 'off';

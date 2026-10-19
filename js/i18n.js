@@ -1,4 +1,4 @@
-/* Every visible string, English and Malayalam (from the design, verbatim; RSVP messages and the 2026-10-18 redesign strings added). */
+/* Every visible string (from the design, verbatim; RSVP messages and the 2026-10-18 redesign strings added). English only since 2026-10-19. */
 window.WEDDING_T = {
   en: {
     music: 'Background music',
@@ -18,24 +18,5 @@ window.WEDDING_T = {
     errSend: 'We couldn’t send your RSVP. Please check your connection and try again.',
     notConnected: 'RSVP is not open yet — please check back soon.',
     cr: [['The wedding function', '5 December 2026 · Chavara'], ['The reception', '6 December 2026 · Varkala'], ['Presented by', 'Our families, with love']]
-  },
-  ml: {
-    music: 'പശ്ചാത്തല സംഗീതം',
-    lettersTitle: 'ക്ഷണക്കത്തുകൾ', lettersNote: 'ഇരു കുടുംബങ്ങളുടെയും കത്തുകൾ — നിങ്ങൾക്ക് ലഭിച്ചത്, അല്ലെങ്കിൽ രണ്ടും, ഡൗൺലോഡ് ചെയ്യാം.', letterGroom: 'വരന്റെ കുടുംബത്തിൽ നിന്ന്', letterBride: 'വധുവിന്റെ കുടുംബത്തിൽ നിന്ന്', download: 'ഡൗൺലോഡ്', view: 'കാണുക',
-    eventsTitle: 'ആഘോഷങ്ങൾ', scroll: 'താഴേക്ക്', autoPause: 'നിർത്തുക', autoPlay: 'തനിയെ നീങ്ങട്ടെ', hideMap: 'മാപ്പ് മറയ്ക്കുക',
-    intro1: 'രണ്ട് കുടുംബങ്ങൾ. ഒരു കഥ.', introTag: 'ആഘോഷത്തിലേക്ക് സ്വാഗതം', open: 'ക്ഷണക്കത്ത് തുറക്കൂ', skip: 'ഒഴിവാക്കുക',
-    together: 'കുടുംബാംഗങ്ങളുടെ അനുഗ്രഹത്തോടെ', invite: 'ഞങ്ങളുടെ പുതിയ ജീവിതയാത്രയുടെ തുടക്കത്തിൽ നിങ്ങളുടെ സാന്നിധ്യം സ്നേഹപൂർവ്വം ക്ഷണിക്കുന്നു',
-    chavaraShort: 'ചവറ', varkalaShort: 'വർക്കല', decYear: 'ഡിസംബർ 2026',
-    countdown: 'കാത്തിരിപ്പ്', units: ['ദിവസം', 'മണിക്കൂർ', 'മിനിറ്റ്', 'സെക്കൻഡ്'], until: 'ഡിസംബർ 5-ലെ വിവാഹ ചടങ്ങിലേക്ക്',
-    us: 'ഞങ്ങൾ', chapter: 'അധ്യായം', time: 'സമയം', venue: 'വേദി', directions: 'വഴി കാണുക', viewMap: 'മാപ്പ്', calendar: 'കലണ്ടറിൽ ചേർക്കുക', back: 'തിരികെ', openMaps: 'ഗൂഗിൾ മാപ്പിൽ തുറക്കുക',
-    ev: ['വിവാഹ ചടങ്ങ്', 'വിവാഹ സൽക്കാരം'], month: 'ഡിസംബർ 2026', wd: ['ശനിയാഴ്ച', 'ഞായറാഴ്ച'],
-    moments: 'നിമിഷങ്ങൾ', drag: 'തിരിക്കാൻ വലിക്കുക', rsvp: 'നിങ്ങൾ വരുമോ?', name: 'പേര്', phone: 'ഫോൺ', attending: 'പങ്കെടുക്കുന്നത്', guests: 'അതിഥികൾ', note: 'ദമ്പതികൾക്കൊരു സന്ദേശം',
-    send: 'അയക്കുക', sending: 'അയക്കുന്നു…', thanks: 'നന്ദി', edit: 'മറുപടി മാറ്റുക',
-    att: ['രണ്ടിലും', 'വിവാഹം മാത്രം', 'സൽക്കാരം മാത്രം', 'വരാൻ കഴിയില്ല'],
-    msg: ['വിവാഹത്തിലും സൽക്കാരത്തിലും കാണാം', 'ചവറയിലെ വിവാഹത്തിൽ കാണാം', 'വർക്കലയിലെ സൽക്കാരത്തിൽ കാണാം', 'അറിയിച്ചതിന് നന്ദി'],
-    guest1: 'അതിഥി', guestN: 'അതിഥികൾ', errName: 'ദയവായി പേര് നൽകുക', errPhone: 'ശരിയായ 10 അക്ക നമ്പർ നൽകുക',
-    errSend: 'മറുപടി അയക്കാൻ കഴിഞ്ഞില്ല. ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.',
-    notConnected: 'മറുപടി സൗകര്യം ഉടൻ ലഭ്യമാകും.',
-    cr: [['വിവാഹ ചടങ്ങ്', '5 ഡിസംബർ 2026 · ചവറ'], ['വിവാഹ സൽക്കാരം', '6 ഡിസംബർ 2026 · വർക്കല'], ['സ്നേഹപൂർവ്വം', 'ഞങ്ങളുടെ കുടുംബങ്ങൾ']]
   }
 };

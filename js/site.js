@@ -316,8 +316,8 @@
 
   /* ---------- Music: one song, looped (no other sound effects) ----------
      Web Audio (sample-accurate loop, fades) — browsers allow sound only after a tap, so it starts on "Open". */
-  const MUSIC_URL = 'assets/v2/audio/marriage-trance-v1.mp3';
-  const KEY_MUSIC = 'wedding-music', VOL = 0.24; // the track is ~5 dB louder than the old piano loop
+  const MUSIC_URL = 'assets/v2/audio/wedding-song-v1.mp3';
+  const KEY_MUSIC = 'wedding-music', VOL = 0.24; // wedding-song-v1 measures -13.1 LUFS (same as the previous track)
   const musicBtn = $('#musicBtn');
   const music = { ctx: null, gain: null, buf: null, src: null, on: false, failed: false, loading: null, bytes: null };
   const wantMusic = () => store.get(KEY_MUSIC) !== 'off';

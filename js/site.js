@@ -314,17 +314,17 @@
     pauseAuto();
   }, { passive: true }));
 
-  /* ---------- Music: the couple's trance track + a soft chime as the doors open ----------
+  /* ---------- Music: one song, looped (no other sound effects) ----------
      Web Audio (sample-accurate loop, fades) — browsers allow sound only after a tap, so it starts on "Open". */
-  const MUSIC_URL = 'assets/v2/audio/marriage-trance-v1.mp3', CHIME_URL = 'assets/v2/audio/door-chime-v1.mp3';
+  const MUSIC_URL = 'assets/v2/audio/marriage-trance-v1.mp3';
   const KEY_MUSIC = 'wedding-music', VOL = 0.24; // the track is ~5 dB louder than the old piano loop
   const musicBtn = $('#musicBtn');
-  const music = { ctx: null, gain: null, buf: null, chime: null, src: null, on: false, failed: false, loading: null, bytes: null };
+  const music = { ctx: null, gain: null, buf: null, src: null, on: false, failed: false, loading: null, bytes: null };
   const wantMusic = () => store.get(KEY_MUSIC) !== 'off';
   function prefetchMusic() {
     if (music.bytes) return;
     const get = u => fetch(u).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
-    music.bytes = [get(MUSIC_URL), get(CHIME_URL)];
+    music.bytes = get(MUSIC_URL);
   }
   function decode(ctx, p) {
     return p.then(ab => ab ? new Promise(res => { try { ctx.decodeAudioData(ab, res, () => res(null)); } catch (e) { res(null); } }) : null);
@@ -338,7 +338,7 @@
     ctx.onstatechange = () => renderMusic();
     music.ctx = ctx; music.gain = ctx.createGain(); music.gain.gain.value = 0; music.gain.connect(ctx.destination);
     prefetchMusic();
-    music.loading = Promise.all([decode(ctx, music.bytes[0]), decode(ctx, music.bytes[1])]).then(([m, c]) => { music.buf = m; music.chime = c; });
+    music.loading = decode(ctx, music.bytes).then(m => { music.buf = m; });
     return ctx;
   }
   // MP3 adds a few ms of encoder silence at both ends — loop between the real first and last samples
@@ -373,14 +373,6 @@
     ramp(0, 0.6);
     setTimeout(() => { if (!music.on && music.ctx.state === 'running') music.ctx.suspend(); }, 700);
   }
-  function playChime() {
-    const ctx = ensureCtx(); if (!ctx) return;
-    music.loading.then(() => {
-      if (!music.chime) return;
-      const s = ctx.createBufferSource(), g = ctx.createGain();
-      s.buffer = music.chime; g.gain.value = 0.5; s.connect(g); g.connect(ctx.destination); s.start();
-    });
-  }
   function renderMusic() {
     const playing = music.on && !!music.src && (!music.ctx || music.ctx.state === 'running');
     musicBtn.dataset.state = music.failed ? 'failed' : playing ? 'playing' : music.on ? 'loading' : 'off';
@@ -414,7 +406,7 @@
     if (opened) return;
     opened = true;
     gate.classList.add('opening');
-    if (wantMusic()) { startMusic(); playChime(); }
+    if (wantMusic()) startMusic();
     document.body.style.overflow = '';
     play(heroFilm);
     entered();
